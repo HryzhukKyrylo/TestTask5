@@ -11,7 +11,7 @@ import java.net.InetAddress
 
 /**
  *@author admin
- */class ConnectToServer {
+ */class ConnectServerRepository {
     private lateinit var mSocket: DatagramSocket
 
     lateinit var listenPacket: DatagramPacket
@@ -28,13 +28,19 @@ import java.net.InetAddress
 
     suspend fun sendPacket() {
         sendPacket = DatagramPacket(mBuf, mBuf.size, InetAddress.getByName(dstIP), dstPort)
-        mSocket = DatagramSocket()
+//        mSocket = DatagramSocket().apply {
+//            soTimeout = 5000
+//        }
 
         while (rerequest) {
             try {
+                mSocket = DatagramSocket().apply {
+                    soTimeout = 5000
+                }
                 mSocket.send(sendPacket)
+                mSocket.receive()
                 Log.i("TAGTAGTAG", "sendPacket: ")
-                delay(1000L)
+//                delay(1000L)
             } catch (e: IOException) {
                 Log.i("TAGTAGTAG", "sendPacket: ${e.message}")
             }
