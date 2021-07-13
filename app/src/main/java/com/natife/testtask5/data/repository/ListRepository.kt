@@ -1,39 +1,28 @@
 package com.natife.testtask5.data.repository
 
 import android.util.Log
-import kotlinx.coroutines.delay
+import com.google.gson.Gson
+import kotlinx.coroutines.*
 import model.UdpDto
 import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
+import javax.inject.Inject
 
 
-class ListRepository {
-    private val socket = DatagramSocket()
+class ListRepository @Inject constructor(
+    private val connectToServer: ConnectToServer
+) {
+    suspend fun connect() {
+        withContext(Dispatchers.Default) {
+            async { connectToServer.sendPacket() }
+            val result = async { connectToServer.receivePacket() }
+            if (result.await()) {
+                connectToServer.stopSend()
+            }
 
-    val sendData = "request".toByteArray()
-    val packet =
-        DatagramPacket(sendData, sendData.size, InetAddress.getByName("255.255.255.255"), 8888)
-
-    suspend fun sendPacket(): String {
-        var ip = ""
-        try {
-            socket.send(packet)
-
-            Log.i("TAGTAGTAG", "sendPacket: ---------$ip")
-
-            socket.receive(packet)
-//            val received = String(packet.getData(), 0, 10)
-            val received = String(packet.getData(), 0, packet.getLength())
-//            val received = packet.socketAddress.toString()
-
-            ip = received
-            Log.i("TAGTAGTAG", "sendPacket: $received")
-        } catch (e: IOException) {
-            Log.e("ListRepositoryTAG", "sendPacket: ${e.printStackTrace()}")
+            Log.i("TAGTAGTAG", "sendViewModel: ${result.await()}")
         }
-        return ip
     }
-
 }

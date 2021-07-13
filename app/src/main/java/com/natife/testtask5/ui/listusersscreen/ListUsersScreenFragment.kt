@@ -44,6 +44,8 @@ class ListUsersScreenFragment : Fragment() {
         binding?.recyclerView?.adapter = adapter
     }
 
+
+
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
