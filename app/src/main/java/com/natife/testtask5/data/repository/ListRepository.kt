@@ -1,28 +1,29 @@
 package com.natife.testtask5.data.repository
 
-import android.util.Log
-import com.google.gson.Gson
-import kotlinx.coroutines.*
-import model.UdpDto
-import java.io.IOException
-import java.net.DatagramPacket
-import java.net.DatagramSocket
-import java.net.InetAddress
+import android.os.Build
+import androidx.annotation.RequiresApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
 class ListRepository @Inject constructor(
-    private val connectToServer: ConnectToServer
+    private val connectToServer: ConnectToServer,
+    private val work: WorkWithServer
 ) {
-    suspend fun connect() {
+    private var ip = ""
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    suspend fun connect()  {
         withContext(Dispatchers.Default) {
             async { connectToServer.sendPacket() }
             val result = async { connectToServer.receivePacket() }
             if (result.await()) {
                 connectToServer.stopSend()
+                ip = connectToServer.getIp()
+                work.connectSocket(ip)
             }
-
-            Log.i("TAGTAGTAG", "sendViewModel: ${result.await()}")
         }
     }
 }

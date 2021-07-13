@@ -3,6 +3,7 @@ package com.natife.testtask5.di
 
 import com.natife.testtask5.data.repository.ConnectToServer
 import com.natife.testtask5.data.repository.ListRepository
+import com.natife.testtask5.data.repository.WorkWithServer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +17,13 @@ class AppModule {
     @Provides
     @Singleton
     fun provideConnectToServer() = ConnectToServer()
+
     @Provides
     @Singleton
-    fun provideRepository(connect : ConnectToServer) = ListRepository(connect)
+    fun provideWorkWithServer() = WorkWithServer()
+
+    @Provides
+    @Singleton
+    fun provideRepository(connect : ConnectToServer, workWithServer: WorkWithServer) =
+        ListRepository(connect, workWithServer)
 }

@@ -21,6 +21,8 @@ import java.net.InetAddress
     private val dstPort = 8888
     private val mBuf = ByteArray(1024)
 
+    private var ip = ""
+
 
     private var rerequest = true
 
@@ -53,6 +55,7 @@ import java.net.InetAddress
             result = String(listenPacket.data,  0, listenPacket.length)
 
             val res: UdpDto = gson.fromJson(result, UdpDto::class.java)
+            ip = res.ip
 
             Log.i("TAGTAGTAG", "receivePacket: $res")
 
@@ -63,6 +66,8 @@ import java.net.InetAddress
 
         return true
     }
+
+    fun getIp() = ip
 
     fun stopSend() {
         rerequest = false
