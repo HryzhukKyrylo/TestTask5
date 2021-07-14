@@ -6,12 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.natife.testtask5.R
 import kotlinx.android.synthetic.main.item_list.view.*
+import model.User
 
-/**
- *@author admin
- */
 class CustomRecyclerAdapter: RecyclerView.Adapter<CustomRecyclerAdapter.CustomViewHolder> (){
-    private var listUsers : List<String> = listOf()
+    private var listUsers : List<User> = listOf()
 
     class CustomViewHolder(view : View) : RecyclerView.ViewHolder(view){
         val nameText = view.nameTextView
@@ -25,12 +23,12 @@ class CustomRecyclerAdapter: RecyclerView.Adapter<CustomRecyclerAdapter.CustomVi
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        holder.nameText.text = listUsers[position]
+        holder.nameText.text = listUsers[position].name
     }
 
     override fun getItemCount() = listUsers.size
 
-    fun updateLiseUsers(list: List<String>){
+    fun updateLiseUsers(list: List<User>){
         listUsers = list
         notifyDataSetChanged()
     }

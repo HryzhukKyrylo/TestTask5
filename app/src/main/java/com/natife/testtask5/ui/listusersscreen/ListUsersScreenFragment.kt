@@ -1,52 +1,54 @@
 package com.natife.testtask5.ui.listusersscreen
 
-import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.natife.testtask5.databinding.FragmentListUsersScreenBinding
 import com.natife.testtask5.ui.listusersscreen.adapter.CustomRecyclerAdapter
-import com.natife.testtask5.ui.listusersscreen.viewmodel.ListViewModel
+import com.natife.testtask5.ui.listusersscreen.viewmodel.UserViewModel
+import com.natife.testtask5.ui.loginscreen.LoginScreenFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ListUsersScreenFragment : Fragment() {
 
-    private var binding : FragmentListUsersScreenBinding? = null
-    private val adapter  by lazy { CustomRecyclerAdapter() }
-    private val viewModel: ListViewModel by viewModels()
+    private var binding: FragmentListUsersScreenBinding? = null
+    private val viewModel: UserViewModel by viewModels()
+    private val adapter by lazy { CustomRecyclerAdapter() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View ?{
-        binding =  FragmentListUsersScreenBinding.inflate(inflater, container, false)
+    ): View? {
+        binding = FragmentListUsersScreenBinding.inflate(inflater, container, false)
         return binding?.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initRecycler()
-        initUsers()
+        initAdapter()
+        val argId = arguments?.getString(LoginScreenFragment.ID_ARG, "")
+        val argNickname = arguments?.getString(LoginScreenFragment.NICK_ARG, "")
+        viewModel.fetchUsers()
+        initListener()
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun initUsers() {
-        viewModel.ip.observe(viewLifecycleOwner){
-            Toast.makeText(requireContext(), "$it", Toast.LENGTH_SHORT).show()
+    private fun initListener() {
+        viewModel.users.observe(viewLifecycleOwner){
+
+            if(!it.isNullOrEmpty()) adapter.updateLiseUsers(it)
         }
-        viewModel.send()
+
     }
 
-    private fun initRecycler() {
+    private fun initAdapter() {
         binding?.recyclerView?.adapter = adapter
     }
-
 
 
     override fun onDestroyView() {

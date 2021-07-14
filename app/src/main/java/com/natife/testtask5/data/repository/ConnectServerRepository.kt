@@ -9,9 +9,7 @@ import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
 
-/**
- *@author admin
- */class ConnectServerRepository {
+class ConnectServerRepository {
     private lateinit var mSocket: DatagramSocket
 
     lateinit var listenPacket: DatagramPacket
@@ -26,11 +24,11 @@ import java.net.InetAddress
 
     private var rerequest = true
 
-    suspend fun sendPacket() {
+     fun sendPacket() {
         sendPacket = DatagramPacket(mBuf, mBuf.size, InetAddress.getByName(dstIP), dstPort)
-//        mSocket = DatagramSocket().apply {
-//            soTimeout = 5000
-//        }
+        listenPacket = DatagramPacket(mBuf, mBuf.size)
+        var result = ""
+        val gson = Gson()
 
         while (rerequest) {
             try {
@@ -38,39 +36,16 @@ import java.net.InetAddress
                     soTimeout = 5000
                 }
                 mSocket.send(sendPacket)
-                mSocket.receive()
-                Log.i("TAGTAGTAG", "sendPacket: ")
-//                delay(1000L)
+                mSocket.receive(listenPacket)
+                result = String(listenPacket.data, 0, listenPacket.length)
+                val res: UdpDto = gson.fromJson(result, UdpDto::class.java)
+                ip = res.ip
+                Log.i("TAGTAGTAG", "ConnectServerRepository/sendPacket: ip = $ip")
+                return
             } catch (e: IOException) {
-                Log.i("TAGTAGTAG", "sendPacket: ${e.message}")
+                Log.i("TAGTAGTAG", "ConnectServerRepository/sendPacket: exception - ${e.message}")
             }
         }
-    }
-
-    suspend fun receivePacket(): Boolean {
-        Log.i("TAGTAGTAG", "receivePacket")
-
-        listenPacket = DatagramPacket(mBuf, mBuf.size)
-
-        mSocket = DatagramSocket()
-        var result = ""
-        var gson = Gson()
-        try {
-            mSocket.receive(listenPacket)
-            result = listenPacket.data.toString()
-            result = String(listenPacket.data,  0, listenPacket.length)
-
-            val res: UdpDto = gson.fromJson(result, UdpDto::class.java)
-            ip = res.ip
-
-            Log.i("TAGTAGTAG", "receivePacket: $res")
-
-        } catch (e: IOException) {
-            Log.i("TAGTAGTAG", "receivePacket: ${e.message}")
-            return false
-        }
-
-        return true
     }
 
     fun getIp() = ip

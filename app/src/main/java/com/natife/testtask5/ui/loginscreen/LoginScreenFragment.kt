@@ -6,14 +6,19 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.natife.testtask5.R
 import com.natife.testtask5.databinding.FragmentLoginScreenBinding
+import com.natife.testtask5.ui.loginscreen.viewmodel.LoginViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginScreenFragment : Fragment() {
     private var binding: FragmentLoginScreenBinding? = null
-
+    private val viewModel: LoginViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,41 +33,45 @@ class LoginScreenFragment : Fragment() {
         initListeners()
     }
 
-
     private fun initListeners() {
-        binding?.email?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        binding?.nickNameTextView?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
             }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
             }
-
-            override fun afterTextChanged(p0: Editable?) {
-                enabledButton()
-            }
-        })
-
-        binding?.password?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-                enabledButton()
+            override fun afterTextChanged(p0: Editable) {
+                if (p0.isNotEmpty()) {
+                    enabledButton(true)
+                } else {
+                    enabledButton(false)
+                }
             }
         })
 
         binding?.loginButton?.setOnClickListener {
-            findNavController().navigate(R.id.action_loginScreenFragment_to_listUsersScreenFragment)
+            val nickname = binding?.nickNameTextView?.text.toString()
+
+            viewModel.navigate.observe(viewLifecycleOwner){ navigate ->
+                if(navigate){
+                    binding?.progressBar?.visibility = View.GONE
+                    viewModel.forget()
+                    val id = viewModel.id.value
+                    val bundle = bundleOf(NICK_ARG to nickname, ID_ARG to id)
+
+                    findNavController().navigate(
+                        R.id.action_loginScreenFragment_to_listUsersScreenFragment,
+                        bundle
+                    )
+                } else {
+                    binding?.progressBar?.visibility = View.VISIBLE
+                }
+            }
+            viewModel.connect(nickname)
         }
     }
 
-    private fun enabledButton() {
-        val mUsername: String = binding?.email?.text.toString().trim()
-        val mPassword: String = binding?.password?.text.toString().trim()
-        binding?.loginButton?.isEnabled = (mUsername.isNotEmpty() && mPassword.isNotBlank())
+    private fun enabledButton(enabled: Boolean) {
+        binding?.loginButton?.isEnabled = (enabled)
     }
 
     override fun onDestroyView() {
@@ -70,5 +79,8 @@ class LoginScreenFragment : Fragment() {
         binding = null
     }
 
-
+    companion object {
+        const val NICK_ARG = "nickname"
+        const val ID_ARG = "id"
+    }
 }
