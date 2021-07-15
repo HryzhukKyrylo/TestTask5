@@ -51,16 +51,12 @@ class LoginScreenFragment : Fragment() {
         binding?.loginButton?.setOnClickListener {
             val nickname = binding?.nickNameTextView?.text.toString()
 
-            viewModel.navigate.observe(viewLifecycleOwner){ navigate ->
-                if(navigate){
+            viewModel.navigate.observe(viewLifecycleOwner) { navigate ->
+                if (navigate) {
                     binding?.progressBar?.visibility = View.GONE
                     viewModel.forget()
-                    val id = viewModel.id.value
-                    val bundle = bundleOf(NICK_ARG to nickname, ID_ARG to id)
-
                     findNavController().navigate(
                         R.id.action_loginScreenFragment_to_listUsersScreenFragment,
-                        bundle
                     )
                 } else {
                     binding?.progressBar?.visibility = View.VISIBLE
@@ -77,10 +73,5 @@ class LoginScreenFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
-    }
-
-    companion object {
-        const val NICK_ARG = "nickname"
-        const val ID_ARG = "id"
     }
 }

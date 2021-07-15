@@ -5,8 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.natife.testtask5.R
 import com.natife.testtask5.databinding.FragmentListUsersScreenBinding
 import com.natife.testtask5.ui.listusersscreen.adapter.CustomRecyclerAdapter
 import com.natife.testtask5.ui.listusersscreen.viewmodel.UserViewModel
@@ -18,7 +21,7 @@ class ListUsersScreenFragment : Fragment() {
 
     private var binding: FragmentListUsersScreenBinding? = null
     private val viewModel: UserViewModel by viewModels()
-    private val adapter by lazy { CustomRecyclerAdapter() }
+    private lateinit var adapter: CustomRecyclerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,11 +43,15 @@ class ListUsersScreenFragment : Fragment() {
 
             if(!it.isNullOrEmpty()) adapter.updateLiseUsers(it)
         }
-        viewModel.fetchUsers()
+//        viewModel.fetchUsers()
 
     }
 
     private fun initAdapter() {
+        adapter = CustomRecyclerAdapter { user ->
+            var bundle = bundleOf("photo" to user)
+            findNavController().navigate(R.id.action_listUsersScreenFragment_to_chatScreenFragment, bundle)
+        }
         binding?.recyclerView?.adapter = adapter
     }
 

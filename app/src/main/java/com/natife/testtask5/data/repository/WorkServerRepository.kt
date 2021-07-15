@@ -1,9 +1,6 @@
 package com.natife.testtask5.data.repository
 
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.natife.testtask5.util.CustomScope
 import kotlinx.coroutines.*
@@ -30,21 +27,20 @@ class WorkServerRepository {
     private val reader: BufferedReader by lazy { BufferedReader(InputStreamReader(mSocket.getInputStream())) }
 
     private val port = 6666
-    private var id = ""
-    private var nameDto = ""
+//    private var id = ""
+    private var id = "192.168.1.103"
+//    private var nameDto = ""
+    private var nameDto = "NickName"
     private val gson = Gson()
 
-//    private val _users = MutableStateFlow<UsersReceivedDto>()
     private val _users = MutableSharedFlow<List<User>>(replay = 1, extraBufferCapacity = 10, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     val users : SharedFlow<List<User>> = _users
 
-    suspend fun connectSocket(ip: String, nickname: String): String {
+    fun connectSocket(ip: String, nickname: String) {
         mSocket = Socket(InetAddress.getByName(ip), port)
         nameDto = nickname
         startListen()
-        return id
     }
-
 
     private fun sendConnect() {
         val connect: String = gson.toJson(ConnectDto(id = id, name = nameDto))
@@ -115,13 +111,11 @@ class WorkServerRepository {
         Log.i("TAG", "WorkServerRepository/fetchUsers: sendMessage - GET_USERS")
     }
 
-    fun disconnect() {
-        reader.close()
-        writer.close()
-        mSocket.close()
-        mSocket = null
-        scope.stop()
-    }
-
-
+//    fun disconnect() {
+//        reader.close()
+//        writer.close()
+//        mSocket.close()
+//        mSocket = null
+//        scope.stop()
+//    }
 }

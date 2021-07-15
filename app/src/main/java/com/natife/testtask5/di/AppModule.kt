@@ -2,6 +2,7 @@ package com.natife.testtask5.di
 
 
 import com.natife.testtask5.data.repository.ConnectServerRepository
+import com.natife.testtask5.data.repository.Repository
 import com.natife.testtask5.data.repository.SharedRepositoryImpl
 import com.natife.testtask5.data.repository.WorkServerRepository
 import dagger.Module
@@ -24,8 +25,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideSharedRepository(connect : ConnectServerRepository, workWithServer: WorkServerRepository) =
+    fun provideSharedRepository(connect : ConnectServerRepository, workWithServer: WorkServerRepository) :Repository =
         SharedRepositoryImpl(connect, workWithServer)
-
 
 }
