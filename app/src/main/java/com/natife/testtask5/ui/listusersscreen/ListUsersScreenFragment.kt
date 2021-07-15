@@ -32,9 +32,6 @@ class ListUsersScreenFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
-        val argId = arguments?.getString(LoginScreenFragment.ID_ARG, "")
-        val argNickname = arguments?.getString(LoginScreenFragment.NICK_ARG, "")
-        viewModel.fetchUsers()
         initListener()
     }
 
@@ -43,6 +40,7 @@ class ListUsersScreenFragment : Fragment() {
 
             if(!it.isNullOrEmpty()) adapter.updateLiseUsers(it)
         }
+        viewModel.fetchUsers()
 
     }
 

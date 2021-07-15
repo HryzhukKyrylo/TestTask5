@@ -1,11 +1,14 @@
 package com.natife.testtask5.data.repository
 
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.natife.testtask5.util.CustomScope
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.*
 import model.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -15,6 +18,8 @@ import java.net.InetAddress
 import java.net.Socket
 
 class WorkServerRepository {
+
+    private val scope = CustomScope()
     private lateinit var mSocket: Socket
     private val writer: PrintWriter by lazy {
         PrintWriter(
@@ -27,21 +32,15 @@ class WorkServerRepository {
     private val port = 6666
     private var id = ""
     private var nameDto = ""
-    val gson = Gson()
+    private val gson = Gson()
 
-    val users = MutableLiveData<List<User>>()
-
+//    private val _users = MutableStateFlow<UsersReceivedDto>()
+    private val _users = MutableSharedFlow<List<User>>(replay = 1, extraBufferCapacity = 10, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    val users : SharedFlow<List<User>> = _users
 
     suspend fun connectSocket(ip: String, nickname: String): String {
         mSocket = Socket(InetAddress.getByName(ip), port)
-        val line = reader.readLine()
-        val res: BaseDto = gson.fromJson(line, BaseDto::class.java)
-        val c: ConnectedDto = gson.fromJson(res.payload, ConnectedDto::class.java)
-        id = c.id
         nameDto = nickname
-
-        sendConnect()
-        startPing()
         startListen()
         return id
     }
@@ -51,41 +50,55 @@ class WorkServerRepository {
         val connect: String = gson.toJson(ConnectDto(id = id, name = nameDto))
         val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.CONNECT, connect))
         sendMessage(messagePing)
-
+        Log.i("TAG", "WorkServerRepository/sendConnect:  sendMessage - CONNECT")
     }
 
     private suspend fun startPing() {
-        CustomScope().launch {
+        scope.launch {
             val ping: String = gson.toJson(PingDto(id = id))
             val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.PING, ping))
             while (true) {
                 sendMessage(messagePing)
+                Log.i("TAG", "WorkServerRepository/startPing:  sendMessage - PING")
                 delay(10000L)
             }
         }
     }
 
     private fun startListen() {
-        CustomScope().launch {
+        scope.launch(Dispatchers.IO) {
             while (true) {
                 val line = reader.readLine()
                 val res: BaseDto = gson.fromJson(line, BaseDto::class.java)
 
-                when(res.action){
+                when (res.action) {
+                    BaseDto.Action.CONNECTED -> {
+                        val c: ConnectedDto = gson.fromJson(res.payload, ConnectedDto::class.java)
+                        id = c.id
+                        sendConnect()
+                        startPing()
+                    }
                     BaseDto.Action.NEW_MESSAGE -> {
                         Log.i("TAG", "WorkServerRepository/startListen:  NEW_MESSAGE")
                     }
                     BaseDto.Action.USERS_RECEIVED -> {
-                        Log.i("TAG", "WorkServerRepository/startListen:  USERS_RECEIVED")
-                        val receivedUsers: UsersReceivedDto = gson.fromJson(res.payload, UsersReceivedDto::class.java)
-                        Log.i("TAG", "WorkServerRepository/startListen:  USERS_RECEIVED = $receivedUsers")
-                        users.postValue(receivedUsers.users)
+                        Log.i(
+                            "TAG", "WorkServerRepository/startListen: USERS_RECEIVED -> $res "
+                        )
+
+                        val receivedUsers: UsersReceivedDto =
+                            gson.fromJson(res.payload, UsersReceivedDto::class.java)
+                        _users.emit(receivedUsers.users)
+
+                        Log.i(
+                            "TAG",
+                            "WorkServerRepository/startListen:  USERS_RECEIVED = $receivedUsers"
+                        )
                     }
                     else -> {
                         Log.i("TAG", "WorkServerRepository/startListen:  ${res.action}")
                     }
                 }
-                delay(10000L)
             }
         }
     }
@@ -95,26 +108,19 @@ class WorkServerRepository {
 //        writer.flush()
     }
 
-    suspend fun fetchUsers() {
-        Log.i("TAG", "WorkServerRepository/fetchUsers: -----fetchUsers-----")
-
+    fun fetchUsers() {
         val getUsers: String = gson.toJson(GetUsersDto(id = id))
         val message: String = gson.toJson(BaseDto(BaseDto.Action.GET_USERS, getUsers))
-        Log.i("TAG", "WorkServerRepository/fetchUsers: GET_USERS - $message")
-
         sendMessage(message)
-//        val line = reader.readLine()
-//        Log.i("TAG", "WorkServerRepository/fetchUsers: result - $line")
-//         val res: BaseDto = gson.fromJson(line, BaseDto::class.java)
-//         val c: UsersReceivedDto = gson.fromJson(res.payload, UsersReceivedDto::class.java)
-//         Log.i("TAG", "WorkServerRepository/fetchUsers: UsersReceivedDto - $c")
-
-//        val res: BaseDto = gson.fromJson(line, BaseDto::class.java)
-//        val c: ConnectedDto = gson.fromJson(res.payload, ConnectedDto::class.java)
+        Log.i("TAG", "WorkServerRepository/fetchUsers: sendMessage - GET_USERS")
     }
 
-    fun getUsers() :LiveData<List<User>>{
-        return users
+    fun disconnect() {
+        reader.close()
+        writer.close()
+        mSocket.close()
+        mSocket = null
+        scope.stop()
     }
 
 
