@@ -1,3 +1,7 @@
-package model
+package com.natife.testtask5.data.model
 
-data class MessageDto(val from: User, val message: String) : Payload
+import model.MessageItem
+import model.Payload
+import model.User
+
+data class MessageDto(val from: User, val message: String) : Payload, MessageItem()

@@ -23,8 +23,8 @@ class LoginViewModel @Inject constructor(private val repository: Repository) :
     fun connect(nickname: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _navigate.postValue(false)
-//          repository.connect(nickname)
-            delay(2000L)
+          repository.connect(nickname)
+//            delay(2000L)
             _navigate.postValue(true)
 
         }

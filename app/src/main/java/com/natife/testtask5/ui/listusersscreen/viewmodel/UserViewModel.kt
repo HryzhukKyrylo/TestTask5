@@ -19,24 +19,26 @@ class UserViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
+            //old
 //            repository.users.collect {
 //                withContext(Dispatchers.Main) {
 //                    _users.value = it
 //                }
 //            }
-//            repository.getUsers().collect{
-//                withContext(Dispatchers.Main){
-//                    _users.value = it
-//                }
-//            }
-            // Test
-            withContext(Dispatchers.Main){
-                _users.value = listOf(
-                    User(id = "11/111/111",name="Hacking First"),
-                    User(id = "222/2222/22",name="Hacking Second"),
-                    User(id = "333/333/",name="HackingThird"),
-                )
+            //new
+            repository.getUsers().collect{
+                withContext(Dispatchers.Main){
+                    _users.value = it
+                }
             }
+            // Test
+//            withContext(Dispatchers.Main){
+//                _users.value = listOf(
+//                    User(id = "11/111/111",name="Snouden First"),
+//                    User(id = "222/2222/22",name="Snouden Second"),
+//                    User(id = "333/333/",name="Snouden Third"),
+//                )
+//            }
         }
     }
 

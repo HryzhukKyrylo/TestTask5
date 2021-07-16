@@ -2,6 +2,7 @@ package com.natife.testtask5.data.repository
 
 import android.util.Log
 import com.google.gson.Gson
+import com.natife.testtask5.data.model.MessageDto
 import com.natife.testtask5.util.CustomScope
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
@@ -27,14 +28,44 @@ class WorkServerRepository {
     private val reader: BufferedReader by lazy { BufferedReader(InputStreamReader(mSocket.getInputStream())) }
 
     private val port = 6666
-//    private var id = ""
-    private var id = "192.168.1.103"
-//    private var nameDto = ""
-    private var nameDto = "NickName"
+    private var id = ""
+
+    //    private var id = "192.168.1.103"
+    private var nameDto = ""
+
+    //    private var nameDto = "NickName"
     private val gson = Gson()
 
-    private val _users = MutableSharedFlow<List<User>>(replay = 1, extraBufferCapacity = 10, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-    val users : SharedFlow<List<User>> = _users
+    private val _users = MutableSharedFlow<List<User>>(
+        replay = 1,
+        extraBufferCapacity = 10,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val users: SharedFlow<List<User>> = _users
+
+    private val _messages = MutableSharedFlow<Payload>(
+        replay = 1,
+        extraBufferCapacity = 10,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val messages: SharedFlow<Payload> = _messages
+
+    private val _messages2 = MutableSharedFlow<String>(
+        replay = 1,
+        extraBufferCapacity = 10,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val messages2: SharedFlow<String> = _messages2
+
+     suspend fun sendMyMessage(idUser: String, message: String) {
+        val messageDTO: String =
+            gson.toJson(SendMessageDto(id = id, receiver = idUser, message = message))
+        val actionMessage: String = gson.toJson(BaseDto(BaseDto.Action.SEND_MESSAGE, messageDTO))
+
+        sendMessage(actionMessage)
+        Log.i("sendMessage", "WorkServerRepository/sendMessage: SEND_MESSAGE -> $actionMessage ")
+         _messages.emit(SendMessageDto(id = id, receiver = idUser, message = message))
+    }
 
     fun connectSocket(ip: String, nickname: String) {
         mSocket = Socket(InetAddress.getByName(ip), port)
@@ -75,11 +106,14 @@ class WorkServerRepository {
                         startPing()
                     }
                     BaseDto.Action.NEW_MESSAGE -> {
-                        Log.i("TAG", "WorkServerRepository/startListen:  NEW_MESSAGE")
+                        val newMessage: MessageDto =
+                            gson.fromJson(res.payload, MessageDto::class.java)
+                        Log.i("TAG", "WorkServerRepository/startListen:  NEW_MESSAGE: $newMessage")
+                        _messages.emit(newMessage)
                     }
                     BaseDto.Action.USERS_RECEIVED -> {
                         Log.i(
-                            "TAG", "WorkServerRepository/startListen: USERS_RECEIVED -> $res "
+                            "TAG", "WorkServerRepository/startListen: USERS_RECEIVEDRECEIVEDRECEIVEDRECEIVEDRECEIVEDRECEIVEDRECEIVED -> $res "
                         )
 
                         val receivedUsers: UsersReceivedDto =
@@ -93,6 +127,7 @@ class WorkServerRepository {
                     }
                     else -> {
                         Log.i("TAG", "WorkServerRepository/startListen:  ${res.action}")
+                        _messages2.emit(res.toString())
                     }
                 }
             }
@@ -101,14 +136,15 @@ class WorkServerRepository {
 
     private fun sendMessage(message: String) {
         writer.println(message)
-//        writer.flush()
     }
 
     fun fetchUsers() {
+
+
         val getUsers: String = gson.toJson(GetUsersDto(id = id))
         val message: String = gson.toJson(BaseDto(BaseDto.Action.GET_USERS, getUsers))
         sendMessage(message)
-        Log.i("TAG", "WorkServerRepository/fetchUsers: sendMessage - GET_USERS")
+        Log.i("TAG", "WorkServerRepository/fetchUsers: sendMessage - GET_USERS ($message)")
     }
 
 //    fun disconnect() {

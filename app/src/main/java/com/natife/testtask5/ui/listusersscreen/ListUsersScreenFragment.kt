@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -39,18 +40,34 @@ class ListUsersScreenFragment : Fragment() {
     }
 
     private fun initListener() {
-        viewModel.users.observe(viewLifecycleOwner){
+        binding?.usersProgressBar?.visibility = View.VISIBLE
+        Toast.makeText(requireContext(), "Load Users", Toast.LENGTH_SHORT).show()
 
-            if(!it.isNullOrEmpty()) adapter.updateLiseUsers(it)
+        viewModel.fetchUsers()
+
+        viewModel.users.observe(viewLifecycleOwner) {
+
+
+            if (!it.isNullOrEmpty()) {
+                binding?.noUsersTextView?.visibility = View.GONE
+                binding?.usersProgressBar?.visibility = View.GONE
+                binding?.recyclerView?.visibility = View.VISIBLE
+                adapter.updateLiseUsers(it)
+            } else {
+                binding?.noUsersTextView?.visibility = View.VISIBLE
+                binding?.usersProgressBar?.visibility = View.GONE
+                binding?.recyclerView?.visibility = View.GONE
+            }
         }
-//        viewModel.fetchUsers()
-
     }
 
     private fun initAdapter() {
         adapter = CustomRecyclerAdapter { user ->
-            var bundle = bundleOf("photo" to user)
-            findNavController().navigate(R.id.action_listUsersScreenFragment_to_chatScreenFragment, bundle)
+            var bundle = bundleOf(USER_ARG to user)
+            findNavController().navigate(
+                R.id.action_listUsersScreenFragment_to_chatScreenFragment,
+                bundle
+            )
         }
         binding?.recyclerView?.adapter = adapter
     }
@@ -59,6 +76,10 @@ class ListUsersScreenFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    companion object{
+        const val USER_ARG = "user_id_465738299763"
     }
 
 }

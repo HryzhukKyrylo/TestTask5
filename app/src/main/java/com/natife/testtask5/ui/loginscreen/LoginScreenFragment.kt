@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.natife.testtask5.R
 import com.natife.testtask5.databinding.FragmentLoginScreenBinding
 import com.natife.testtask5.ui.loginscreen.viewmodel.LoginViewModel
+import com.natife.testtask5.util.hideSoftKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -45,6 +47,7 @@ class LoginScreenFragment : Fragment() {
                 } else {
                     enabledButton(false)
                 }
+//                activity?.hideSoftKeyboard()
             }
         })
 
@@ -60,6 +63,7 @@ class LoginScreenFragment : Fragment() {
                     )
                 } else {
                     binding?.progressBar?.visibility = View.VISIBLE
+                    Toast.makeText(requireContext(), resources.getString(R.string.connect_to_server), Toast.LENGTH_SHORT).show()
                 }
             }
             viewModel.connect(nickname)
