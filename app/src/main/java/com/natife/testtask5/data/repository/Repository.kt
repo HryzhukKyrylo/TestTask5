@@ -7,7 +7,7 @@ import model.User
 
 interface Repository {
     suspend fun connect(nickname: String)
-    fun fetchUsers()
+    suspend fun fetchUsers()
     fun getUsers(): SharedFlow<List<User>>
     suspend fun getMessages(): SharedFlow<Payload>
     suspend fun getMessages2(): SharedFlow<String>

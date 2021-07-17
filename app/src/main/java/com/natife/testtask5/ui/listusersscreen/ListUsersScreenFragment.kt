@@ -43,11 +43,7 @@ class ListUsersScreenFragment : Fragment() {
         binding?.usersProgressBar?.visibility = View.VISIBLE
         Toast.makeText(requireContext(), "Load Users", Toast.LENGTH_SHORT).show()
 
-        viewModel.fetchUsers()
-
         viewModel.users.observe(viewLifecycleOwner) {
-
-
             if (!it.isNullOrEmpty()) {
                 binding?.noUsersTextView?.visibility = View.GONE
                 binding?.usersProgressBar?.visibility = View.GONE

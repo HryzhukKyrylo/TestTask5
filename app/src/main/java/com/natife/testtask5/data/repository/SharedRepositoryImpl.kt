@@ -20,7 +20,7 @@ class SharedRepositoryImpl @Inject constructor(
     }
 
 
-    override fun fetchUsers() {
+    override suspend fun fetchUsers() {
         workWithServer.fetchUsers()
     }
 

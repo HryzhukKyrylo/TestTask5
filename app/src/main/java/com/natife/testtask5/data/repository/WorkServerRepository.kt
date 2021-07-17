@@ -29,12 +29,11 @@ class WorkServerRepository {
 
     private val port = 6666
     private var id = ""
-
-    //    private var id = "192.168.1.103"
     private var nameDto = ""
-
-    //    private var nameDto = "NickName"
     private val gson = Gson()
+
+    private var listenUser = true
+
 
     private val _users = MutableSharedFlow<List<User>>(
         replay = 1,
@@ -57,14 +56,14 @@ class WorkServerRepository {
     )
     val messages2: SharedFlow<String> = _messages2
 
-     suspend fun sendMyMessage(idUser: String, message: String) {
+    suspend fun sendMyMessage(idUser: String, message: String) {
         val messageDTO: String =
             gson.toJson(SendMessageDto(id = id, receiver = idUser, message = message))
         val actionMessage: String = gson.toJson(BaseDto(BaseDto.Action.SEND_MESSAGE, messageDTO))
 
-        sendMessage(actionMessage)
+        sendMessageToServer(actionMessage)
         Log.i("sendMessage", "WorkServerRepository/sendMessage: SEND_MESSAGE -> $actionMessage ")
-         _messages.emit(SendMessageDto(id = id, receiver = idUser, message = message))
+        _messages.emit(SendMessageDto(id = id, receiver = idUser, message = message))
     }
 
     fun connectSocket(ip: String, nickname: String) {
@@ -76,7 +75,7 @@ class WorkServerRepository {
     private fun sendConnect() {
         val connect: String = gson.toJson(ConnectDto(id = id, name = nameDto))
         val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.CONNECT, connect))
-        sendMessage(messagePing)
+        sendMessageToServer(messagePing)
         Log.i("TAG", "WorkServerRepository/sendConnect:  sendMessage - CONNECT")
     }
 
@@ -85,7 +84,7 @@ class WorkServerRepository {
             val ping: String = gson.toJson(PingDto(id = id))
             val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.PING, ping))
             while (true) {
-                sendMessage(messagePing)
+                sendMessageToServer(messagePing)
                 Log.i("TAG", "WorkServerRepository/startPing:  sendMessage - PING")
                 delay(10000L)
             }
@@ -113,7 +112,8 @@ class WorkServerRepository {
                     }
                     BaseDto.Action.USERS_RECEIVED -> {
                         Log.i(
-                            "TAG", "WorkServerRepository/startListen: USERS_RECEIVEDRECEIVEDRECEIVEDRECEIVEDRECEIVEDRECEIVEDRECEIVED -> $res "
+                            "TAG",
+                            "WorkServerRepository/startListen: USERS_RECEIVEDRECEIVEDRECEIVEDRECEIVEDRECEIVEDRECEIVEDRECEIVED -> $res "
                         )
 
                         val receivedUsers: UsersReceivedDto =
@@ -134,17 +134,22 @@ class WorkServerRepository {
         }
     }
 
-    private fun sendMessage(message: String) {
+    private fun sendMessageToServer(message: String) {
         writer.println(message)
     }
 
-    fun fetchUsers() {
-
-
+    suspend fun fetchUsers() {
         val getUsers: String = gson.toJson(GetUsersDto(id = id))
         val message: String = gson.toJson(BaseDto(BaseDto.Action.GET_USERS, getUsers))
-        sendMessage(message)
+        startGetUsers(message)
         Log.i("TAG", "WorkServerRepository/fetchUsers: sendMessage - GET_USERS ($message)")
+    }
+
+    private suspend fun startGetUsers(message: String) {
+        if (listenUser) {
+            sendMessageToServer(message)
+            delay(10000L)
+        }
     }
 
 //    fun disconnect() {

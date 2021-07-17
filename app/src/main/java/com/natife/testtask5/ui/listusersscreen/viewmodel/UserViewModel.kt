@@ -19,37 +19,17 @@ class UserViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            //old
-//            repository.users.collect {
-//                withContext(Dispatchers.Main) {
-//                    _users.value = it
-//                }
-//            }
-            //new
+            repository.fetchUsers()
             repository.getUsers().collect{
                 withContext(Dispatchers.Main){
                     _users.value = it
                 }
             }
-            // Test
-//            withContext(Dispatchers.Main){
-//                _users.value = listOf(
-//                    User(id = "11/111/111",name="Snouden First"),
-//                    User(id = "222/2222/22",name="Snouden Second"),
-//                    User(id = "333/333/",name="Snouden Third"),
-//                )
-//            }
         }
     }
 
     private val _users = MutableLiveData<List<User>>()
     val users: LiveData<List<User>> = _users
-
-    fun fetchUsers() {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.fetchUsers()
-        }
-    }
 
 }
 
