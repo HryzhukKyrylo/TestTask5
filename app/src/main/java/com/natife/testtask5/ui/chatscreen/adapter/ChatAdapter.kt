@@ -1,5 +1,6 @@
 package com.natife.testtask5.ui.chatscreen.adapter
 
+import android.content.res.Resources
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import com.natife.testtask5.databinding.MyMessageBinding
 import com.natife.testtask5.databinding.UserMessageBinding
 import model.Payload
 import model.SendMessageDto
+
 
 class ChatAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var messageList = mutableListOf<Payload>()

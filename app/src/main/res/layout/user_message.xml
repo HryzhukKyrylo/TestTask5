@@ -3,17 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-
+    android:layout_height="wrap_content"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
+        android:id="@+id/userMessageCardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@color/teal_200"
+        app:cardBackgroundColor="@color/teal_200"
         app:cardCornerRadius="12dp"
         app:cardPreventCornerOverlap="false"
         app:cardUseCompatPadding="true"
@@ -24,12 +23,10 @@
             android:id="@+id/userMessageText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="12dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="8dp"
-            android:textSize="20sp"
+            android:layout_gravity="start"
+            android:padding="8dp"
             android:textAlignment="viewStart"
+            android:textSize="20sp"
             tools:text="@tools:sample/full_names" />
 
     </androidx.cardview.widget.CardView>
@@ -40,8 +37,8 @@
         android:layout_height="wrap_content"
         android:textColor="#C0C0C0"
         android:textSize="10sp"
-        app:layout_constraintStart_toEndOf="@+id/cardView"
-        app:layout_constraintTop_toBottomOf="@+id/cardView"
+        app:layout_constraintStart_toStartOf="@+id/userMessageCardView"
+        app:layout_constraintTop_toBottomOf="@+id/userMessageCardView"
         tools:text="10:00" />
 
 
