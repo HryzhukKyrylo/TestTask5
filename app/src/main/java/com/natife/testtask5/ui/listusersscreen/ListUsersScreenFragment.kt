@@ -1,11 +1,9 @@
 package com.natife.testtask5.ui.listusersscreen
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,7 +12,6 @@ import com.natife.testtask5.R
 import com.natife.testtask5.databinding.FragmentListUsersScreenBinding
 import com.natife.testtask5.ui.listusersscreen.adapter.CustomRecyclerAdapter
 import com.natife.testtask5.ui.listusersscreen.viewmodel.UserViewModel
-import com.natife.testtask5.ui.loginscreen.LoginScreenFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,7 +29,6 @@ class ListUsersScreenFragment : Fragment() {
         return binding?.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
@@ -41,7 +37,6 @@ class ListUsersScreenFragment : Fragment() {
 
     private fun initListener() {
         binding?.usersProgressBar?.visibility = View.VISIBLE
-        Toast.makeText(requireContext(), "Load Users", Toast.LENGTH_SHORT).show()
 
         viewModel.users.observe(viewLifecycleOwner) {
             if (!it.isNullOrEmpty()) {
@@ -68,7 +63,6 @@ class ListUsersScreenFragment : Fragment() {
         binding?.recyclerView?.adapter = adapter
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
@@ -77,5 +71,4 @@ class ListUsersScreenFragment : Fragment() {
     companion object{
         const val USER_ARG = "user_id_465738299763"
     }
-
 }
