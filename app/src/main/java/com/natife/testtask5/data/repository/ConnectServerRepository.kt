@@ -15,8 +15,8 @@ class ConnectServerRepository {
     lateinit var listenPacket: DatagramPacket
     private lateinit var sendPacket: DatagramPacket
 
-//    private val dstIP = "10.0.2.2" //for comp
-    private val dstIP = "255.255.255.255"
+    private val dstIP = "10.0.2.2" //for comp
+//    private val dstIP = "255.255.255.255"
     private val dstPort = 8888
     private val mBuf = ByteArray(1024)
 

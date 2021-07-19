@@ -1,33 +1,29 @@
 package com.natife.testtask5.ui.chatscreen
 
-
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.natife.testtask5.R
 import com.natife.testtask5.databinding.FragmentChatScreenBinding
 import com.natife.testtask5.ui.chatscreen.adapter.ChatAdapter
 import com.natife.testtask5.ui.chatscreen.viewmodel.ChatViewModel
 import com.natife.testtask5.ui.listusersscreen.ListUsersScreenFragment
 import com.natife.testtask5.util.hideSoftKeyboard
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import model.User
+
 
 @AndroidEntryPoint
 class ChatScreenFragment : Fragment() {
     private var binding: FragmentChatScreenBinding? = null
-    private var adapter : ChatAdapter? = null
+    private var adapter: ChatAdapter? = null
     private val chatViewModel: ChatViewModel by viewModels()
     private var user: User? = null
 
@@ -46,9 +42,29 @@ class ChatScreenFragment : Fragment() {
             findNavController().popBackStack()
             return
         }
-
+        initToolbar()
         initAdapter()
         initListener()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as AppCompatActivity?)?.supportActionBar?.hide()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (activity as AppCompatActivity?)?.supportActionBar?.show()
+
+    }
+
+    private fun initToolbar() {
+        binding?.toolbar?.setNavigationIcon(R.drawable.ic_baseline_back)
+        binding?.toolbar?.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding?.nameUserView?.text = user?.name
     }
 
     private fun initAdapter() {
@@ -81,21 +97,12 @@ class ChatScreenFragment : Fragment() {
             }
         })
 
-        chatViewModel.messages.observe(viewLifecycleOwner){ messages ->
-            if(messages != null){
+        chatViewModel.messages.observe(viewLifecycleOwner) { messages ->
+            if (messages != null) {
                 adapter?.updateListRecycler(messages)
             }
 
         }
-//        chatViewModel.messages2.observe(viewLifecycleOwner){ messages ->
-//            if(messages != null){
-//                Toast.makeText(requireContext(), messages, Toast.LENGTH_SHORT).show()
-//            }
-//
-//        }
-
-
-
     }
 
     override fun onDestroyView() {
