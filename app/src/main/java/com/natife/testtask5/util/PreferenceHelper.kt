@@ -5,7 +5,8 @@ import android.content.SharedPreferences
 
 
 object PreferenceHelper {
-    private const val PREFERENCE_CONST = "const"
+    private const val PREFERENCE_CONST = "checkLogin"
+    private const val PREFERENCE_NAME = "nickname"
 
     fun customPreference(context: Context, name: String): SharedPreferences =
         context.getSharedPreferences(name, Context.MODE_PRIVATE)
@@ -21,6 +22,13 @@ object PreferenceHelper {
         set(value) {
             editMe {
                 it.putBoolean(PREFERENCE_CONST, value)
+            }
+        }
+    var SharedPreferences.savedNickname
+        get() = getString(PREFERENCE_NAME, "")
+        set(value) {
+            editMe {
+                it.putString(PREFERENCE_NAME, value)
             }
         }
 
