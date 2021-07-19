@@ -146,9 +146,11 @@ class WorkServerRepository {
     }
 
     private suspend fun startGetUsers(message: String) {
-        if (listenUser) {
-            sendMessageToServer(message)
-            delay(10000L)
+        scope.launch {
+            while (listenUser) {
+                sendMessageToServer(message)
+                delay(10000L)
+            }
         }
     }
 
