@@ -4,4 +4,4 @@ import model.MessageItem
 import model.Payload
 import model.User
 
-data class MessageDto(val from: User, val message: String) : Payload, MessageItem()
+data class MessageDto(val from: User, val message: String, var time: String) : Payload, MessageItem()

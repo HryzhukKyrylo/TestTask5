@@ -15,15 +15,18 @@ class ChatAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     class UserViewHolder(private val binding: UserMessageBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(message: MessageDto) {
-            binding.userMessageText.text = message.message
+        fun bind(user: MessageDto) {
+
+            binding.userMessageText.text = user.message
+            binding.textDateUser.text = user.time
         }
     }
 
     class MyViewHolder(private val binding: MyMessageBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(message: SendMessageDto) {
-            binding.myMessageText.text = message.message
+        fun bind(me: SendMessageDto) {
+            binding.myMessageText.text = me.message
+            binding.textDateMe.text = me.time
         }
     }
 

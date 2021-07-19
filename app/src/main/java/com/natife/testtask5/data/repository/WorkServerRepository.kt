@@ -1,5 +1,6 @@
 package com.natife.testtask5.data.repository
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.google.gson.Gson
 import com.natife.testtask5.data.model.MessageDto
@@ -14,6 +15,8 @@ import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.net.InetAddress
 import java.net.Socket
+import java.text.SimpleDateFormat
+import java.util.*
 
 class WorkServerRepository {
 
@@ -49,21 +52,17 @@ class WorkServerRepository {
     )
     val messages: SharedFlow<Payload> = _messages
 
-    private val _messages2 = MutableSharedFlow<String>(
-        replay = 1,
-        extraBufferCapacity = 10,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
-    val messages2: SharedFlow<String> = _messages2
-
+    @SuppressLint("SimpleDateFormat")
     suspend fun sendMyMessage(idUser: String, message: String) {
+        val sdf = SimpleDateFormat("hh:mm:ss")
+        val currentDate = sdf.format(Date())
         val messageDTO: String =
-            gson.toJson(SendMessageDto(id = id, receiver = idUser, message = message))
+            gson.toJson(SendMessageDto(id = id, receiver = idUser, message = message, time = currentDate))
         val actionMessage: String = gson.toJson(BaseDto(BaseDto.Action.SEND_MESSAGE, messageDTO))
 
         sendMessageToServer(actionMessage)
         Log.i("sendMessage", "WorkServerRepository/sendMessage: SEND_MESSAGE -> $actionMessage ")
-        _messages.emit(SendMessageDto(id = id, receiver = idUser, message = message))
+        _messages.emit(SendMessageDto(id = id, receiver = idUser, message = message,time = currentDate))
     }
 
     fun connectSocket(ip: String, nickname: String) {
@@ -91,6 +90,7 @@ class WorkServerRepository {
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun startListen() {
         scope.launch(Dispatchers.IO) {
             while (true) {
@@ -105,8 +105,10 @@ class WorkServerRepository {
                         startPing()
                     }
                     BaseDto.Action.NEW_MESSAGE -> {
+                        val sdf = SimpleDateFormat("hh:mm:ss")
+                        val currentDate = sdf.format(Date())
                         val newMessage: MessageDto =
-                            gson.fromJson(res.payload, MessageDto::class.java)
+                            gson.fromJson(res.payload, MessageDto::class.java).apply { time = currentDate }
                         Log.i("TAG", "WorkServerRepository/startListen:  NEW_MESSAGE: $newMessage")
                         _messages.emit(newMessage)
                     }
@@ -127,7 +129,6 @@ class WorkServerRepository {
                     }
                     else -> {
                         Log.i("TAG", "WorkServerRepository/startListen:  ${res.action}")
-                        _messages2.emit(res.toString())
                     }
                 }
             }

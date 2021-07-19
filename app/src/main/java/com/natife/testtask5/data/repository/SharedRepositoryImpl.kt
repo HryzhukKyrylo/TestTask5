@@ -11,14 +11,11 @@ class SharedRepositoryImpl @Inject constructor(
     private val workWithServer: WorkServerRepository
 ) : Repository {
 
-//    val users = workWithServer.users
-
     override suspend fun connect(nickname: String) {
         connectToServer.sendPacket()
         connectToServer.stopSend()
         workWithServer.connectSocket(connectToServer.getIp(), nickname)
     }
-
 
     override suspend fun fetchUsers() {
         workWithServer.fetchUsers()
@@ -29,10 +26,6 @@ class SharedRepositoryImpl @Inject constructor(
 
     override suspend fun getMessages(): SharedFlow<Payload> =
         workWithServer.messages
-
-    override suspend fun getMessages2(): SharedFlow<String> =
-        workWithServer.messages2
-
 
     override suspend fun sendMyMessage(idUser: String, message: String) {
         workWithServer.sendMyMessage(idUser, message)
