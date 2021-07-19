@@ -1,7 +1,5 @@
 package com.natife.testtask5.ui.chatscreen.adapter
 
-import android.content.res.Resources
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -51,9 +49,7 @@ class ChatAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) =
         when (holder) {
-
             is MyViewHolder -> holder.bind(messageList[position] as SendMessageDto)
-//            is UserViewHolder -> holder.bind(messageList[position] as String)
             is UserViewHolder -> holder.bind(messageList[position] as MessageDto)
             else -> {
                 throw IllegalArgumentException("Invalid type in ChatAdapter/onBindViewHolder -> ")
@@ -67,13 +63,11 @@ class ChatAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             is SendMessageDto -> MY_MESSAGE
             is MessageDto -> USER_MESSAGE
             else -> throw IllegalArgumentException("Invalid type of data -> $position")
-
         }
 
     fun updateListRecycler(item: Payload) {
         messageList.add(item)
         notifyDataSetChanged()
-        Log.i("TAG", "ChatAdapter/ updateListRecycler: ")
     }
 
     fun clearListRecycler() {

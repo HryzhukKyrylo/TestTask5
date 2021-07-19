@@ -3,7 +3,6 @@ package com.natife.testtask5.util
 import android.content.Context
 import android.content.SharedPreferences
 
-
 object PreferenceHelper {
     private const val PREFERENCE_CONST = "checkLogin"
     private const val PREFERENCE_NAME = "nickname"
@@ -31,5 +30,4 @@ object PreferenceHelper {
                 it.putString(PREFERENCE_NAME, value)
             }
         }
-
 }

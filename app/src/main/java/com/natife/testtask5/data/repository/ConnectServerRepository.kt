@@ -16,7 +16,8 @@ class ConnectServerRepository {
     private lateinit var sendPacket: DatagramPacket
 
     private val dstIP = "10.0.2.2" //for comp
-//    private val dstIP = "255.255.255.255" // for phone
+
+    //    private val dstIP = "255.255.255.255" // for phone
     private val dstPort = 8888
     private val mBuf = ByteArray(1024)
 
@@ -25,7 +26,7 @@ class ConnectServerRepository {
 
     private var rerequest = true
 
-     fun sendPacket() {
+    fun sendPacket() {
         sendPacket = DatagramPacket(mBuf, mBuf.size, InetAddress.getByName(dstIP), dstPort)
         listenPacket = DatagramPacket(mBuf, mBuf.size)
         var result = ""
@@ -41,10 +42,8 @@ class ConnectServerRepository {
                 result = String(listenPacket.data, 0, listenPacket.length)
                 val res: UdpDto = gson.fromJson(result, UdpDto::class.java)
                 ip = res.ip
-                Log.i("TAGTAGTAG", "ConnectServerRepository/sendPacket: ip = $ip")
                 return
             } catch (e: IOException) {
-                Log.i("TAGTAGTAG", "ConnectServerRepository/sendPacket: exception - ${e.message}")
             }
         }
     }

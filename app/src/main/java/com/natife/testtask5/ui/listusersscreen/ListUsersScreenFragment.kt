@@ -68,7 +68,7 @@ class ListUsersScreenFragment : Fragment() {
         binding = null
     }
 
-    companion object{
+    companion object {
         const val USER_ARG = "user_id_465738299763"
     }
 }

@@ -30,6 +30,4 @@ class SharedRepositoryImpl @Inject constructor(
     override suspend fun sendMyMessage(idUser: String, message: String) {
         workWithServer.sendMyMessage(idUser, message)
     }
-
-
 }

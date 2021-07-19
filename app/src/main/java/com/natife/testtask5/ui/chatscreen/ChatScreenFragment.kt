@@ -19,7 +19,6 @@ import com.natife.testtask5.util.hideSoftKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import model.User
 
-
 @AndroidEntryPoint
 class ChatScreenFragment : Fragment() {
     private var binding: FragmentChatScreenBinding? = null
@@ -82,11 +81,7 @@ class ChatScreenFragment : Fragment() {
                     user?.id?.let { idUser ->
                         chatViewModel.sendMessage(idUser, binding?.messageText?.text.toString())
                     }
-
-                    // hide soft keyboard programmatically
                     activity?.hideSoftKeyboard()
-
-                    // clear focus and hide cursor from edit text
                     binding?.messageText?.setText("")
                     binding?.messageText?.clearFocus()
                     binding?.messageText?.isCursorVisible = false

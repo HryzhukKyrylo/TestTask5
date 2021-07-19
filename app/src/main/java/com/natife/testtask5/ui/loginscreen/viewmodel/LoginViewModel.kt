@@ -5,10 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.natife.testtask5.data.repository.Repository
-import com.natife.testtask5.data.repository.SharedRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,19 +17,15 @@ class LoginViewModel @Inject constructor(private val repository: Repository) :
     private val _navigate = MutableLiveData<Boolean>()
     val navigate: LiveData<Boolean> = _navigate
 
-
     fun connect(nickname: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _navigate.postValue(false)
-          repository.connect(nickname)
-//            delay(2000L)
+            repository.connect(nickname)
             _navigate.postValue(true)
-
         }
     }
 
     fun forget() {
         _navigate.postValue(false)
     }
-
 }

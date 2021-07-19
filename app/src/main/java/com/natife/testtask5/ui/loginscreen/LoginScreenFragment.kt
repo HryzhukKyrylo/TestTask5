@@ -4,11 +4,9 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -20,7 +18,6 @@ import com.natife.testtask5.util.PreferenceHelper.checkLogin
 import com.natife.testtask5.util.PreferenceHelper.customPreference
 import com.natife.testtask5.util.PreferenceHelper.savedNickname
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.reflect.Array.get
 
 private const val CUSTOM_PREF_NAME = "my_preferences"
 
@@ -29,8 +26,6 @@ class LoginScreenFragment : Fragment() {
     private var binding: FragmentLoginScreenBinding? = null
     private val viewModel: LoginViewModel by viewModels()
     private var preferences: SharedPreferences? = null
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -119,5 +114,4 @@ class LoginScreenFragment : Fragment() {
         binding = null
         preferences = null
     }
-
 }

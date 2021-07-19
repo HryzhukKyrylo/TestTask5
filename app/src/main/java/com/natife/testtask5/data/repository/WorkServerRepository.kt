@@ -1,7 +1,6 @@
 package com.natife.testtask5.data.repository
 
 import android.annotation.SuppressLint
-import android.util.Log
 import com.google.gson.Gson
 import com.natife.testtask5.data.model.MessageDto
 import com.natife.testtask5.util.CustomScope
@@ -57,12 +56,24 @@ class WorkServerRepository {
         val sdf = SimpleDateFormat("hh:mm:ss")
         val currentDate = sdf.format(Date())
         val messageDTO: String =
-            gson.toJson(SendMessageDto(id = id, receiver = idUser, message = message, time = currentDate))
+            gson.toJson(
+                SendMessageDto(
+                    id = id,
+                    receiver = idUser,
+                    message = message,
+                    time = currentDate
+                )
+            )
         val actionMessage: String = gson.toJson(BaseDto(BaseDto.Action.SEND_MESSAGE, messageDTO))
-
         sendMessageToServer(actionMessage)
-        Log.i("sendMessage", "WorkServerRepository/sendMessage: SEND_MESSAGE -> $actionMessage ")
-        _messages.emit(SendMessageDto(id = id, receiver = idUser, message = message,time = currentDate))
+        _messages.emit(
+            SendMessageDto(
+                id = id,
+                receiver = idUser,
+                message = message,
+                time = currentDate
+            )
+        )
     }
 
     fun connectSocket(ip: String, nickname: String) {
@@ -75,7 +86,6 @@ class WorkServerRepository {
         val connect: String = gson.toJson(ConnectDto(id = id, name = nameDto))
         val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.CONNECT, connect))
         sendMessageToServer(messagePing)
-        Log.i("TAG", "WorkServerRepository/sendConnect:  sendMessage - CONNECT")
     }
 
     private suspend fun startPing() {
@@ -84,7 +94,6 @@ class WorkServerRepository {
             val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.PING, ping))
             while (true) {
                 sendMessageToServer(messagePing)
-                Log.i("TAG", "WorkServerRepository/startPing:  sendMessage - PING")
                 delay(10000L)
             }
         }
@@ -108,27 +117,16 @@ class WorkServerRepository {
                         val sdf = SimpleDateFormat("hh:mm:ss")
                         val currentDate = sdf.format(Date())
                         val newMessage: MessageDto =
-                            gson.fromJson(res.payload, MessageDto::class.java).apply { time = currentDate }
-                        Log.i("TAG", "WorkServerRepository/startListen:  NEW_MESSAGE: $newMessage")
+                            gson.fromJson(res.payload, MessageDto::class.java)
+                                .apply { time = currentDate }
                         _messages.emit(newMessage)
                     }
                     BaseDto.Action.USERS_RECEIVED -> {
-                        Log.i(
-                            "TAG",
-                            "WorkServerRepository/startListen: USERS_RECEIVEDRECEIVEDRECEIVEDRECEIVEDRECEIVEDRECEIVEDRECEIVED -> $res "
-                        )
-
                         val receivedUsers: UsersReceivedDto =
                             gson.fromJson(res.payload, UsersReceivedDto::class.java)
                         _users.emit(receivedUsers.users)
-
-                        Log.i(
-                            "TAG",
-                            "WorkServerRepository/startListen:  USERS_RECEIVED = $receivedUsers"
-                        )
                     }
                     else -> {
-                        Log.i("TAG", "WorkServerRepository/startListen:  ${res.action}")
                     }
                 }
             }
@@ -143,7 +141,6 @@ class WorkServerRepository {
         val getUsers: String = gson.toJson(GetUsersDto(id = id))
         val message: String = gson.toJson(BaseDto(BaseDto.Action.GET_USERS, getUsers))
         startGetUsers(message)
-        Log.i("TAG", "WorkServerRepository/fetchUsers: sendMessage - GET_USERS ($message)")
     }
 
     private suspend fun startGetUsers(message: String) {

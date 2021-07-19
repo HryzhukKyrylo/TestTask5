@@ -15,5 +15,4 @@ interface Repository {
     suspend fun getMessages(): SharedFlow<Payload>
 
     suspend fun sendMyMessage(idUser: String, message: String)
-
 }

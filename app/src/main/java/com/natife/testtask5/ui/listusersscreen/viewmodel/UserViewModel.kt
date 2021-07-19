@@ -20,8 +20,8 @@ class UserViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             repository.fetchUsers()
-            repository.getUsers().collect{
-                withContext(Dispatchers.Main){
+            repository.getUsers().collect {
+                withContext(Dispatchers.Main) {
                     _users.value = it
                 }
             }
@@ -30,8 +30,4 @@ class UserViewModel @Inject constructor(
 
     private val _users = MutableLiveData<List<User>>()
     val users: LiveData<List<User>> = _users
-
 }
-
-
-
