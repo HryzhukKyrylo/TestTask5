@@ -2,19 +2,14 @@ package com.natife.testtask5.data.repository
 
 import com.natife.testtask5.data.model.MessageDto
 import com.natife.testtask5.data.model.Payload
-import kotlinx.coroutines.flow.SharedFlow
 import com.natife.testtask5.data.model.User
+import kotlinx.coroutines.flow.SharedFlow
 
-interface Repository {
-    suspend fun connect(nickname: String)
-
-    suspend fun fetchUsers()
-
-    fun getUsers(): SharedFlow<List<User>>
-
-    suspend fun getMessages(): SharedFlow<MessageDto>
-
+interface ServerRepository {
     suspend fun sendMyMessage(idUser: String, message: String)
-
-    fun getId() :String
+    fun connectSocket(ip: String, nickname: String)
+    suspend fun fetchUsers()
+    fun getUsers(): SharedFlow<List<User>>
+    fun getMessages(): SharedFlow<MessageDto>
+    fun getId() : String
 }

@@ -1,4 +1,4 @@
-package model
+package com.natife.testtask5.data.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

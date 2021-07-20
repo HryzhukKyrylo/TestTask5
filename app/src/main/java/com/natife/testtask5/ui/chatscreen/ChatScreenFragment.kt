@@ -1,10 +1,10 @@
 package com.natife.testtask5.ui.chatscreen
 
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,7 +17,7 @@ import com.natife.testtask5.ui.chatscreen.viewmodel.ChatViewModel
 import com.natife.testtask5.ui.listusersscreen.ListUsersScreenFragment
 import com.natife.testtask5.util.hideSoftKeyboard
 import dagger.hilt.android.AndroidEntryPoint
-import model.User
+import com.natife.testtask5.data.model.User
 
 @AndroidEntryPoint
 class ChatScreenFragment : Fragment() {
@@ -25,6 +25,7 @@ class ChatScreenFragment : Fragment() {
     private var adapter: ChatAdapter? = null
     private val chatViewModel: ChatViewModel by viewModels()
     private var user: User? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,34 +68,28 @@ class ChatScreenFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        adapter = ChatAdapter()
+        adapter = ChatAdapter(chatViewModel.getId())
         binding?.chatRecyclerAdapter?.layoutManager = LinearLayoutManager(requireContext())
         binding?.chatRecyclerAdapter?.adapter = adapter
     }
 
     private fun initListener() {
-        binding?.messageText?.setOnKeyListener(object : View.OnKeyListener {
-            override fun onKey(p0: View?, keyCode: Int, event: KeyEvent): Boolean {
-                if (event.action == KeyEvent.ACTION_DOWN &&
-                    keyCode == KeyEvent.KEYCODE_ENTER
-                ) {
-                    user?.id?.let { idUser ->
-                        chatViewModel.sendMessage(idUser, binding?.messageText?.text.toString())
-                    }
-                    activity?.hideSoftKeyboard()
-                    binding?.messageText?.setText("")
-                    binding?.messageText?.clearFocus()
-                    binding?.messageText?.isCursorVisible = false
-
-                    return true
+        binding?.messageText?.setOnEditorActionListener { _, id, _ ->
+            if (id == EditorInfo.IME_ACTION_SEND){
+                user?.id?.let { idUser ->
+                    chatViewModel.sendMessage(idUser, binding?.messageText?.text.toString())
                 }
-                return false
+                activity?.hideSoftKeyboard()
+                binding?.messageText?.setText("")
+                binding?.messageText?.clearFocus()
+                binding?.messageText?.isCursorVisible = false
             }
-        })
+             true
+        }
 
         chatViewModel.messages.observe(viewLifecycleOwner) { messages ->
             if (messages != null) {
-                adapter?.updateListRecycler(messages)
+                adapter?.add(messages)
             }
 
         }
@@ -102,7 +97,6 @@ class ChatScreenFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        adapter?.clearListRecycler()
         adapter = null
         user = null
         binding = null

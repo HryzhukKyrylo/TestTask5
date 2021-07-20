@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.natife.testtask5.databinding.ItemListBinding
-import model.User
+import com.natife.testtask5.data.model.User
 
 class CustomRecyclerAdapter(val itemClick: (User) -> Unit) :
     RecyclerView.Adapter<CustomRecyclerAdapter.CustomViewHolder>() {

@@ -1,4 +1,4 @@
-package com.natife.testtask5.ui.base
+package com.natife.testtask5.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

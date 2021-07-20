@@ -3,20 +3,17 @@ package com.natife.testtask5.util
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlin.coroutines.CoroutineContext
 
 class CustomScope : CoroutineScope {
 
-    private var parentJob = Job()
+    private var parentJob = SupervisorJob()
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + parentJob
 
-    fun onStart() {
-        parentJob = Job()
-    }
-
-    fun stop() {
-        parentJob.cancel()
-    }
+//    fun stop() {
+//        parentJob.cancel()
+//    }
 }

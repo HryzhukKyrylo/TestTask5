@@ -1,15 +1,18 @@
 package com.natife.testtask5.di
 
 
-import com.natife.testtask5.data.repository.ConnectServerRepository
-import com.natife.testtask5.data.repository.Repository
-import com.natife.testtask5.data.repository.SharedRepositoryImpl
-import com.natife.testtask5.data.repository.WorkServerRepository
+import android.content.Context
+import android.content.SharedPreferences
+
+import com.natife.testtask5.data.repository.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+private const val CUSTOM_PREF_NAME = "my_preferences"
+
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -17,15 +20,21 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideConnectToServer() = ConnectServerRepository()
+    fun provideConnectRepository(connect: ConnectRepositoryImpl):ConnectServerRepository = connect
+
 
     @Provides
     @Singleton
-    fun provideWorkWithServer() = WorkServerRepository()
+    fun provideServerRepository(server: ServerRepositoryImpl):ServerRepository = server
 
     @Provides
     @Singleton
-    fun provideSharedRepository(connect : ConnectServerRepository, workWithServer: WorkServerRepository) :Repository =
-        SharedRepositoryImpl(connect, workWithServer)
+    fun provideSharedRepository(connect : ConnectServerRepository, server: ServerRepository) :Repository =
+        SharedRepositoryImpl(connect, server)
+
+    @Provides
+    @Singleton
+    fun providePreferences(@ApplicationContext appContext: Context) : SharedPreferences =
+    appContext.getSharedPreferences(CUSTOM_PREF_NAME, Context.MODE_PRIVATE)
 
 }

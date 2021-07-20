@@ -2,12 +2,11 @@ package com.natife.testtask5.data.repository
 
 import android.annotation.SuppressLint
 import com.google.gson.Gson
-import com.natife.testtask5.data.model.MessageDto
+import com.natife.testtask5.data.model.*
 import com.natife.testtask5.util.CustomScope
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
-import model.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
@@ -16,83 +15,85 @@ import java.net.InetAddress
 import java.net.Socket
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
-class WorkServerRepository {
+class ServerRepositoryImpl @Inject constructor() : ServerRepository {
 
     private val scope = CustomScope()
-    private lateinit var mSocket: Socket
+    private lateinit var socket: Socket
     private val writer: PrintWriter by lazy {
         PrintWriter(
-            OutputStreamWriter(mSocket.getOutputStream()),
+            OutputStreamWriter(socket.getOutputStream()),
             true
         )
     }
-    private val reader: BufferedReader by lazy { BufferedReader(InputStreamReader(mSocket.getInputStream())) }
+    private val reader: BufferedReader by lazy { BufferedReader(InputStreamReader(socket.getInputStream())) }
 
     private val port = 6666
-    private var id = ""
-    private var nameDto = ""
+    private var myId = ""
+    private var myName = ""
     private val gson = Gson()
 
-    private var listenUser = true
+    private var cycleUsers = true
+    private var cyclePing = true
+    private var cycleListen = true
 
-
-    private val _users = MutableSharedFlow<List<User>>(
+    private val listenToUsers = MutableSharedFlow<List<User>>(
         replay = 1,
         extraBufferCapacity = 10,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    val users: SharedFlow<List<User>> = _users
+    private val users: SharedFlow<List<User>> = listenToUsers
 
-    private val _messages = MutableSharedFlow<Payload>(
+    private val listenToMessages = MutableSharedFlow<MessageDto>(
         replay = 1,
         extraBufferCapacity = 10,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    val messages: SharedFlow<Payload> = _messages
+    private val messages: SharedFlow<MessageDto> = listenToMessages
+
 
     @SuppressLint("SimpleDateFormat")
-    suspend fun sendMyMessage(idUser: String, message: String) {
+    override suspend fun sendMyMessage(idUser: String, message: String) {
         val sdf = SimpleDateFormat("hh:mm:ss")
         val currentDate = sdf.format(Date())
-        val messageDTO: String =
-            gson.toJson(
-                SendMessageDto(
-                    id = id,
-                    receiver = idUser,
-                    message = message,
-                    time = currentDate
-                )
-            )
-        val actionMessage: String = gson.toJson(BaseDto(BaseDto.Action.SEND_MESSAGE, messageDTO))
+        val objectSendMessageDto = SendMessageDto(id = myId, receiver = idUser, message = message, time = currentDate)
+        val objectMessageDto = MessageDto(from = User(id = myId,name = myName), message = message, time = currentDate)
+        val jsonSenMessageDto: String = gson.toJson(objectSendMessageDto)
+        val actionMessage: String = gson.toJson(BaseDto(BaseDto.Action.SEND_MESSAGE, jsonSenMessageDto))
         sendMessageToServer(actionMessage)
-        _messages.emit(
-            SendMessageDto(
-                id = id,
-                receiver = idUser,
-                message = message,
-                time = currentDate
-            )
-        )
+        listenToMessages.emit(objectMessageDto)
     }
 
-    fun connectSocket(ip: String, nickname: String) {
-        mSocket = Socket(InetAddress.getByName(ip), port)
-        nameDto = nickname
+    override fun connectSocket(ip: String, nickname: String) {
+        socket = Socket(InetAddress.getByName(ip), port)
+        myName = nickname
         startListen()
     }
 
+    override fun getUsers(): SharedFlow<List<User>> = users
+
+    override fun getMessages(): SharedFlow<MessageDto> = messages
+
+    override fun getId(): String = myId
+
+    override suspend fun fetchUsers() {
+        val getUsers: String = gson.toJson(GetUsersDto(id = myId))
+        val message: String = gson.toJson(BaseDto(BaseDto.Action.GET_USERS, getUsers))
+        startGetUsers(message)
+    }
+
     private fun sendConnect() {
-        val connect: String = gson.toJson(ConnectDto(id = id, name = nameDto))
+        val connect: String = gson.toJson(ConnectDto(id = myId, name = myName))
         val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.CONNECT, connect))
         sendMessageToServer(messagePing)
     }
 
     private suspend fun startPing() {
         scope.launch {
-            val ping: String = gson.toJson(PingDto(id = id))
+            val ping: String = gson.toJson(PingDto(id = myId))
             val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.PING, ping))
-            while (true) {
+            while (cyclePing) {
                 sendMessageToServer(messagePing)
                 delay(10000L)
             }
@@ -102,14 +103,14 @@ class WorkServerRepository {
     @SuppressLint("SimpleDateFormat")
     private fun startListen() {
         scope.launch(Dispatchers.IO) {
-            while (true) {
+            while (cycleListen) {
                 val line = reader.readLine()
                 val res: BaseDto = gson.fromJson(line, BaseDto::class.java)
 
                 when (res.action) {
                     BaseDto.Action.CONNECTED -> {
                         val c: ConnectedDto = gson.fromJson(res.payload, ConnectedDto::class.java)
-                        id = c.id
+                        myId = c.id
                         sendConnect()
                         startPing()
                     }
@@ -119,12 +120,12 @@ class WorkServerRepository {
                         val newMessage: MessageDto =
                             gson.fromJson(res.payload, MessageDto::class.java)
                                 .apply { time = currentDate }
-                        _messages.emit(newMessage)
+                        listenToMessages.emit(newMessage)
                     }
                     BaseDto.Action.USERS_RECEIVED -> {
                         val receivedUsers: UsersReceivedDto =
                             gson.fromJson(res.payload, UsersReceivedDto::class.java)
-                        _users.emit(receivedUsers.users)
+                        listenToUsers.emit(receivedUsers.users)
                     }
                     else -> {
                     }
@@ -137,20 +138,16 @@ class WorkServerRepository {
         writer.println(message)
     }
 
-    suspend fun fetchUsers() {
-        val getUsers: String = gson.toJson(GetUsersDto(id = id))
-        val message: String = gson.toJson(BaseDto(BaseDto.Action.GET_USERS, getUsers))
-        startGetUsers(message)
-    }
-
     private suspend fun startGetUsers(message: String) {
         scope.launch {
-            while (listenUser) {
+            while (cycleUsers) {
                 sendMessageToServer(message)
                 delay(10000L)
             }
         }
     }
+
+
 
 //    fun disconnect() {
 //        reader.close()

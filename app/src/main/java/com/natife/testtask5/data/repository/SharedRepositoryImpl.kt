@@ -1,33 +1,36 @@
 package com.natife.testtask5.data.repository
 
+import com.natife.testtask5.data.model.MessageDto
+import com.natife.testtask5.data.model.Payload
 import kotlinx.coroutines.flow.SharedFlow
-import model.MessageItem
-import model.Payload
-import model.User
+import com.natife.testtask5.data.model.User
 import javax.inject.Inject
 
 class SharedRepositoryImpl @Inject constructor(
-    private val connectToServer: ConnectServerRepository,
-    private val workWithServer: WorkServerRepository
+    private val connectRepository: ConnectServerRepository,
+    private val serverRepository: ServerRepository
 ) : Repository {
 
     override suspend fun connect(nickname: String) {
-        connectToServer.sendPacket()
-        connectToServer.stopSend()
-        workWithServer.connectSocket(connectToServer.getIp(), nickname)
+        connectRepository.sendPacket()
+        connectRepository.stopSend()
+        serverRepository.connectSocket(connectRepository.getIp(), nickname)
     }
 
     override suspend fun fetchUsers() {
-        workWithServer.fetchUsers()
+        serverRepository.fetchUsers()
     }
 
     override fun getUsers(): SharedFlow<List<User>> =
-        workWithServer.users
+        serverRepository.getUsers()
 
-    override suspend fun getMessages(): SharedFlow<Payload> =
-        workWithServer.messages
+    override suspend fun getMessages(): SharedFlow<MessageDto> =
+        serverRepository.getMessages()
 
     override suspend fun sendMyMessage(idUser: String, message: String) {
-        workWithServer.sendMyMessage(idUser, message)
+        serverRepository.sendMyMessage(idUser, message)
     }
+
+    override fun getId() = serverRepository.getId()
+
 }

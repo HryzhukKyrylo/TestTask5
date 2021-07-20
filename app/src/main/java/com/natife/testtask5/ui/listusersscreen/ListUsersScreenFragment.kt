@@ -19,7 +19,7 @@ class ListUsersScreenFragment : Fragment() {
 
     private var binding: FragmentListUsersScreenBinding? = null
     private val viewModel: UserViewModel by viewModels()
-    private lateinit var adapter: CustomRecyclerAdapter
+    private var adapter: CustomRecyclerAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,25 +36,31 @@ class ListUsersScreenFragment : Fragment() {
     }
 
     private fun initListener() {
+        viewModel.fetchUsers()
         binding?.usersProgressBar?.visibility = View.VISIBLE
 
         viewModel.users.observe(viewLifecycleOwner) {
             if (!it.isNullOrEmpty()) {
-                binding?.noUsersTextView?.visibility = View.GONE
-                binding?.usersProgressBar?.visibility = View.GONE
-                binding?.recyclerView?.visibility = View.VISIBLE
-                adapter.updateLiseUsers(it)
+                binding?.apply {
+                    noUsersTextView.visibility = View.GONE
+                    usersProgressBar.visibility = View.GONE
+                    recyclerView.visibility = View.VISIBLE
+                }
+
+                adapter?.updateLiseUsers(it)
             } else {
-                binding?.noUsersTextView?.visibility = View.VISIBLE
-                binding?.usersProgressBar?.visibility = View.GONE
-                binding?.recyclerView?.visibility = View.GONE
+                binding?.apply {
+                    noUsersTextView.visibility = View.VISIBLE
+                    usersProgressBar.visibility = View.GONE
+                    recyclerView.visibility = View.GONE
+                }
             }
         }
     }
 
     private fun initAdapter() {
         adapter = CustomRecyclerAdapter { user ->
-            var bundle = bundleOf(USER_ARG to user)
+            val bundle = bundleOf(USER_ARG to user)
             findNavController().navigate(
                 R.id.action_listUsersScreenFragment_to_chatScreenFragment,
                 bundle
