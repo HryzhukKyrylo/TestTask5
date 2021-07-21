@@ -53,7 +53,6 @@ class ListUsersScreenFragment : Fragment() {
                 }
 
                 adapter?.submitList(it)
-//                adapter?.updateLiseUsers(it)
             } else {
                 binding?.apply {
                     noUsersTextView.visibility = View.VISIBLE

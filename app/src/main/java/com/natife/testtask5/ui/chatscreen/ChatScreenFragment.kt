@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,13 +19,22 @@ import com.natife.testtask5.ui.listusersscreen.ListUsersScreenFragment
 import com.natife.testtask5.util.hideSoftKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import com.natife.testtask5.data.model.User
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChatScreenFragment : Fragment() {
     private var binding: FragmentChatScreenBinding? = null
     private var adapter: ChatAdapter? = null
-    private val chatViewModel: ChatViewModel by viewModels()
-    private var user: User? = null
+
+    @Inject
+    lateinit var chatProfileFactory: ChatViewModel.AssistedFactory
+
+    private val chatViewModel by viewModels<ChatViewModel> {
+        ChatViewModel.provideFactory(
+            chatProfileFactory,
+            arguments?.getParcelable<User>(ListUsersScreenFragment.USER_ARG)
+        )
+    }
 
 
     override fun onCreateView(
@@ -37,14 +47,22 @@ class ChatScreenFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        user = arguments?.getParcelable<User>(ListUsersScreenFragment.USER_ARG)
-        if (user == null) {
-            findNavController().popBackStack()
-            return
-        }
+
+        checkUser()
         initToolbar()
         initAdapter()
         initListener()
+    }
+
+    private fun checkUser() {
+        chatViewModel.user.observe(viewLifecycleOwner) {
+            if (it == null) {
+                findNavController().popBackStack()
+                return@observe
+            } else {
+                binding?.nameUserView?.text = it.name
+            }
+        }
     }
 
     override fun onResume() {
@@ -63,8 +81,6 @@ class ChatScreenFragment : Fragment() {
         binding?.toolbar?.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
-
-        binding?.nameUserView?.text = user?.name
     }
 
     private fun initAdapter() {
@@ -75,16 +91,14 @@ class ChatScreenFragment : Fragment() {
 
     private fun initListener() {
         binding?.messageText?.setOnEditorActionListener { _, id, _ ->
-            if (id == EditorInfo.IME_ACTION_SEND){
-                user?.id?.let { idUser ->
-                    chatViewModel.sendMessage(idUser, binding?.messageText?.text.toString())
-                }
+            if (id == EditorInfo.IME_ACTION_SEND) {
+                chatViewModel.sendMessage(binding?.messageText?.text.toString())
                 activity?.hideSoftKeyboard()
                 binding?.messageText?.setText("")
                 binding?.messageText?.clearFocus()
                 binding?.messageText?.isCursorVisible = false
             }
-             true
+            true
         }
 
         chatViewModel.messages.observe(viewLifecycleOwner) { messages ->
@@ -97,7 +111,6 @@ class ChatScreenFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         adapter = null
-        user = null
         binding = null
     }
 }
