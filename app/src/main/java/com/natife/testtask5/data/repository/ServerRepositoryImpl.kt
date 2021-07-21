@@ -37,19 +37,19 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
     private var cyclePing = true
     private var cycleListen = true
 
-    private val listenToUsers = MutableSharedFlow<List<User>>(
+    private val usersListener = MutableSharedFlow<List<User>>(
         replay = 1,
         extraBufferCapacity = 10,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    private val users: SharedFlow<List<User>> = listenToUsers
+    private val users: SharedFlow<List<User>> = usersListener
 
-    private val listenToMessages = MutableSharedFlow<MessageDto>(
+    private val messagesListener = MutableSharedFlow<MessageDto>(
         replay = 1,
         extraBufferCapacity = 10,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    private val messages: SharedFlow<MessageDto> = listenToMessages
+    private val messages: SharedFlow<MessageDto> = messagesListener
 
 
     @SuppressLint("SimpleDateFormat")
@@ -63,8 +63,8 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
         val jsonSenMessageDto: String = gson.toJson(objectSendMessageDto)
         val actionMessage: String =
             gson.toJson(BaseDto(BaseDto.Action.SEND_MESSAGE, jsonSenMessageDto))
-        listenToMessages.emit(objectMessageDto)
         sendMessageToServer(actionMessage)
+        messagesListener.emit(objectMessageDto)
     }
 
     override fun connectSocket(ip: String, nickname: String) {
@@ -122,12 +122,12 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
                         val newMessage: MessageDto =
                             gson.fromJson(res.payload, MessageDto::class.java)
                                 .apply { time = currentDate }
-                        listenToMessages.emit(newMessage)
+                        messagesListener.emit(newMessage)
                     }
                     BaseDto.Action.USERS_RECEIVED -> {
                         val receivedUsers: UsersReceivedDto =
                             gson.fromJson(res.payload, UsersReceivedDto::class.java)
-                        listenToUsers.emit(receivedUsers.users)
+                        usersListener.emit(receivedUsers.users)
                     }
                     else -> {
                     }
@@ -140,17 +140,17 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
         val disconnectDto: String = gson.toJson(DisconnectDto(id = myId, code = 1))
         val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.CONNECT, disconnectDto))
         sendMessageToServer(messagePing)
+        close()
     }
 
     private fun sendMessageToServer(message: String) {
         writer.println(message)
     }
 
-//    fun disconnect() {
-//        reader.close()
-//        writer.close()
-//        mSocket.close()
-//        mSocket = null
-//        scope.stop()
-//    }
+    private fun close() {
+        reader.close()
+        writer.close()
+        socket.close()
+        scope.stop()
+    }
 }

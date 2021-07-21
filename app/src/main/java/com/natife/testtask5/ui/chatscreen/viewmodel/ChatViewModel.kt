@@ -1,9 +1,6 @@
 package com.natife.testtask5.ui.chatscreen.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.natife.testtask5.data.model.MessageDto
 import com.natife.testtask5.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,8 +12,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: Repository,
+    private val state: SavedStateHandle
 ) : ViewModel() {
+
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -30,6 +29,8 @@ class ChatViewModel @Inject constructor(
 
     private val messagesListener = MutableLiveData<MessageDto>()
     val messages: LiveData<MessageDto> = messagesListener
+
+//    private val user = state.
 
     fun sendMessage(idUser: String, message: String) {
         viewModelScope.launch(Dispatchers.IO) {
