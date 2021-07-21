@@ -69,10 +69,6 @@ class LoginScreenFragment : Fragment() {
                     popBackStack(R.id.loginScreenFragment, true)
                     navigate(R.id.listUsersScreenFragment)
                 }
-//                findNavController().navigate(
-//
-//                    R.id.action_loginScreenFragment_to_listUsersScreenFragment
-//                )
             } else {
                 binding?.progressBar?.visibility = View.VISIBLE
                 Toast.makeText(

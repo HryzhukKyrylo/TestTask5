@@ -94,9 +94,11 @@ class ChatScreenFragment : Fragment() {
             if (id == EditorInfo.IME_ACTION_SEND) {
                 chatViewModel.sendMessage(binding?.messageText?.text.toString())
                 activity?.hideSoftKeyboard()
-                binding?.messageText?.setText("")
-                binding?.messageText?.clearFocus()
-                binding?.messageText?.isCursorVisible = false
+                binding?.apply {
+                    messageText.setText("")
+                    messageText.clearFocus()
+                    messageText.isCursorVisible = false
+                }
             }
             true
         }
