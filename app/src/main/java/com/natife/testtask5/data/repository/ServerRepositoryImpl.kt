@@ -138,7 +138,7 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
 
     override suspend fun disconnect() {
         val disconnectDto: String = gson.toJson(DisconnectDto(id = myId, code = 1))
-        val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.CONNECT, disconnectDto))
+        val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.DISCONNECT, disconnectDto))
         sendMessageToServer(messagePing)
         close()
     }

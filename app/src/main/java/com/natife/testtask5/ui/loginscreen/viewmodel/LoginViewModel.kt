@@ -23,10 +23,6 @@ class LoginViewModel @Inject constructor(
     private val mutableNavigate = SingleLiveEvent<Boolean>()
     val navigate : SingleLiveEvent<Boolean> = mutableNavigate
 
-//
-//    private val navigateListeners = MutableLiveData<Boolean>()
-//    val navigate: LiveData<Boolean> = navigateListeners
-
     private val preferencesSaveNickname = MutableLiveData<String>()
     val savedNickname: LiveData<String> = preferencesSaveNickname
     private val preferencesRememberNickname = MutableLiveData<Boolean>()
@@ -34,10 +30,8 @@ class LoginViewModel @Inject constructor(
 
     fun connect(nickname: String) {
         viewModelScope.launch(Dispatchers.IO) {
-//            navigateListeners.postValue(false)
             mutableNavigate.postValue(false)
             repository.connect(nickname)
-//            navigateListeners.postValue(true)
             mutableNavigate.postValue(true)
         }
     }
@@ -50,7 +44,6 @@ class LoginViewModel @Inject constructor(
     }
 
     fun forget() {
-//        navigateListeners.postValue(false)
         mutableNavigate.postValue(false)
     }
 
@@ -62,8 +55,4 @@ class LoginViewModel @Inject constructor(
             preferences.checkLogin = false
         }
     }
-
-
 }
-
-
