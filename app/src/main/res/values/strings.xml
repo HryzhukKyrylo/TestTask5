@@ -12,6 +12,7 @@
     <string name="chat">Chat</string>
     <string name="login_in">Login in</string>
     <string name="send_message">Enter message....</string>
+    <string name="back_press">Нажмите еще раз для выхода!</string>
 
     />
 </resources>

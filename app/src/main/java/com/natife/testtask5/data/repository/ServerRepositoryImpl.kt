@@ -34,7 +34,6 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
     private var myName = ""
     private val gson = Gson()
 
-    private var cycleUsers = true
     private var cyclePing = true
     private var cycleListen = true
 
@@ -57,18 +56,21 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
     override suspend fun sendMyMessage(idUser: String, message: String) {
         val sdf = SimpleDateFormat("hh:mm:ss")
         val currentDate = sdf.format(Date())
-        val objectSendMessageDto = SendMessageDto(id = myId, receiver = idUser, message = message, time = currentDate)
-        val objectMessageDto = MessageDto(from = User(id = myId,name = myName), message = message, time = currentDate)
+        val objectSendMessageDto =
+            SendMessageDto(id = myId, receiver = idUser, message = message, time = currentDate)
+        val objectMessageDto =
+            MessageDto(from = User(id = myId, name = myName), message = message, time = currentDate)
         val jsonSenMessageDto: String = gson.toJson(objectSendMessageDto)
-        val actionMessage: String = gson.toJson(BaseDto(BaseDto.Action.SEND_MESSAGE, jsonSenMessageDto))
-        sendMessageToServer(actionMessage)
+        val actionMessage: String =
+            gson.toJson(BaseDto(BaseDto.Action.SEND_MESSAGE, jsonSenMessageDto))
         listenToMessages.emit(objectMessageDto)
+        sendMessageToServer(actionMessage)
     }
 
     override fun connectSocket(ip: String, nickname: String) {
         socket = Socket(InetAddress.getByName(ip), port)
         myName = nickname
-        startListen()
+        startListenServer()
     }
 
     override fun getUsers(): SharedFlow<List<User>> = users
@@ -80,7 +82,7 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
     override suspend fun fetchUsers() {
         val getUsers: String = gson.toJson(GetUsersDto(id = myId))
         val message: String = gson.toJson(BaseDto(BaseDto.Action.GET_USERS, getUsers))
-        startGetUsers(message)
+        sendMessageToServer(message)
     }
 
     private fun sendConnect() {
@@ -101,7 +103,7 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun startListen() {
+    private fun startListenServer() {
         scope.launch(Dispatchers.IO) {
             while (cycleListen) {
                 val line = reader.readLine()
@@ -137,17 +139,6 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
     private fun sendMessageToServer(message: String) {
         writer.println(message)
     }
-
-    private suspend fun startGetUsers(message: String) {
-        scope.launch {
-            while (cycleUsers) {
-                sendMessageToServer(message)
-                delay(10000L)
-            }
-        }
-    }
-
-
 
 //    fun disconnect() {
 //        reader.close()

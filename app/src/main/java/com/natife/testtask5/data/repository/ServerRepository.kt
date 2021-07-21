@@ -6,10 +6,16 @@ import com.natife.testtask5.data.model.User
 import kotlinx.coroutines.flow.SharedFlow
 
 interface ServerRepository {
+
     suspend fun sendMyMessage(idUser: String, message: String)
+
     fun connectSocket(ip: String, nickname: String)
+
     suspend fun fetchUsers()
+
     fun getUsers(): SharedFlow<List<User>>
+
     fun getMessages(): SharedFlow<MessageDto>
-    fun getId() : String
+
+    fun getId(): String
 }

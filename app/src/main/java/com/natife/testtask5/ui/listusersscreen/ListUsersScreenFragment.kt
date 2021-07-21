@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -20,6 +22,8 @@ class ListUsersScreenFragment : Fragment() {
     private var binding: FragmentListUsersScreenBinding? = null
     private val viewModel: ListUsersViewModel by viewModels()
     private var adapter: ListUsersAdapter? = null
+    private var backPressed = 0L
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,6 +35,7 @@ class ListUsersScreenFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        onBackPressed()
         initAdapter()
         initListener()
     }
@@ -68,6 +73,30 @@ class ListUsersScreenFragment : Fragment() {
             )
         }
         binding?.recyclerView?.adapter = adapter
+    }
+
+    private fun onBackPressed() {
+        activity?.onBackPressedDispatcher?.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (backPressed + 2000 > System.currentTimeMillis()) {
+                        isEnabled = false
+                        activity?.onBackPressed()
+                    } else
+                        Toast.makeText(
+                            requireContext(),
+                            resources.getString(R.string.back_press),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    backPressed = System.currentTimeMillis()
+                }
+            })
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.stopFetchUsers()
     }
 
     override fun onDestroyView() {

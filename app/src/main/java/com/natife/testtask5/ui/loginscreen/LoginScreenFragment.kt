@@ -64,10 +64,15 @@ class LoginScreenFragment : Fragment() {
                     binding?.nickNameEditText?.text.toString(),
                     binding?.rememberPassword?.isChecked ?: false
                 )
-                findNavController().navigate(
 
-                    R.id.action_loginScreenFragment_to_listUsersScreenFragment
-                )
+                with(findNavController()) {
+                    popBackStack(R.id.loginScreenFragment, true)
+                    navigate(R.id.listUsersScreenFragment)
+                }
+//                findNavController().navigate(
+//
+//                    R.id.action_loginScreenFragment_to_listUsersScreenFragment
+//                )
             } else {
                 binding?.progressBar?.visibility = View.VISIBLE
                 Toast.makeText(

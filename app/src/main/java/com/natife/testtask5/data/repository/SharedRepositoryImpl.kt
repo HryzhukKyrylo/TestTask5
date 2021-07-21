@@ -1,9 +1,11 @@
 package com.natife.testtask5.data.repository
 
 import com.natife.testtask5.data.model.MessageDto
-import com.natife.testtask5.data.model.Payload
-import kotlinx.coroutines.flow.SharedFlow
 import com.natife.testtask5.data.model.User
+import com.natife.testtask5.util.CustomScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SharedRepositoryImpl @Inject constructor(
@@ -11,14 +13,22 @@ class SharedRepositoryImpl @Inject constructor(
     private val serverRepository: ServerRepository
 ) : Repository {
 
+    private val scope = CustomScope()
+    private var cycleUsers = true
+
     override suspend fun connect(nickname: String) {
         connectRepository.sendPacket()
-        connectRepository.stopSend()
         serverRepository.connectSocket(connectRepository.getIp(), nickname)
     }
 
-    override suspend fun fetchUsers() {
-        serverRepository.fetchUsers()
+    override suspend fun startFetchUsers() {
+        cycleUsers = true
+        scope.launch {
+            while (cycleUsers) {
+                serverRepository.fetchUsers()
+                delay(10000L)
+            }
+        }
     }
 
     override fun getUsers(): SharedFlow<List<User>> =
@@ -32,5 +42,9 @@ class SharedRepositoryImpl @Inject constructor(
     }
 
     override fun getId() = serverRepository.getId()
+
+    override fun stopFetchUsers() {
+        cycleUsers = false
+    }
 
 }

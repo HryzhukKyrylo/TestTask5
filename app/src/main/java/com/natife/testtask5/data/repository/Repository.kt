@@ -6,9 +6,10 @@ import kotlinx.coroutines.flow.SharedFlow
 import com.natife.testtask5.data.model.User
 
 interface Repository {
+
     suspend fun connect(nickname: String)
 
-    suspend fun fetchUsers()
+    suspend fun startFetchUsers()
 
     fun getUsers(): SharedFlow<List<User>>
 
@@ -17,4 +18,6 @@ interface Repository {
     suspend fun sendMyMessage(idUser: String, message: String)
 
     fun getId() :String
+
+    fun stopFetchUsers()
 }

@@ -10,8 +10,6 @@ import javax.inject.Inject
 
 class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
 
-    private val mBuf: ByteArray by lazy { ByteArray(1024) }
-
     private val dstIP = "10.0.2.2" //for comp
 
 //    private val dstIP = "255.255.255.255" // for phone
@@ -22,8 +20,9 @@ class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
 
     override fun sendPacket() {
         var mSocket: DatagramSocket
-        val sendPacket = DatagramPacket(mBuf, mBuf.size, InetAddress.getByName(dstIP), dstPort)
-        val listenPacket = DatagramPacket(mBuf, mBuf.size)
+        val arrayByte = ByteArray(1024)
+        val sendPacket = DatagramPacket(arrayByte, arrayByte.size, InetAddress.getByName(dstIP), dstPort)
+        val listenPacket = DatagramPacket(arrayByte, arrayByte.size)
         val gson = Gson()
 
         while (rerequest) {
@@ -45,7 +44,4 @@ class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
 
     override fun getIp() = ip
 
-    override fun stopSend() {
-        rerequest = false
-    }
 }
