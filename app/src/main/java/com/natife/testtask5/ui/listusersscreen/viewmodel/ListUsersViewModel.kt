@@ -22,14 +22,14 @@ class ListUsersViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             repository.getUsers().collect {
                 withContext(Dispatchers.Main) {
-                    _users.value = it
+                    usersListeners.value = it
                 }
             }
         }
     }
 
-    private val _users = MutableLiveData<List<User>>()
-    val users: LiveData<List<User>> = _users
+    private val usersListeners = MutableLiveData<List<User>>()
+    val users: LiveData<List<User>> = usersListeners
 
     fun fetchUsers() {
         viewModelScope.launch(Dispatchers.IO) {

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.natife.testtask5.data.repository.Repository
 import com.natife.testtask5.util.PreferenceHelper.checkLogin
 import com.natife.testtask5.util.PreferenceHelper.savedNickname
+import com.natife.testtask5.util.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,8 +20,12 @@ class LoginViewModel @Inject constructor(
     private val preferences: SharedPreferences
 ) : ViewModel() {
 
-    private val _navigate = MutableLiveData<Boolean>()
-    val navigate: LiveData<Boolean> = _navigate
+    private val mutableNavigate = SingleLiveEvent<Boolean>()
+    val navigate : SingleLiveEvent<Boolean> = mutableNavigate
+
+//
+//    private val navigateListeners = MutableLiveData<Boolean>()
+//    val navigate: LiveData<Boolean> = navigateListeners
 
     private val preferencesSaveNickname = MutableLiveData<String>()
     val savedNickname: LiveData<String> = preferencesSaveNickname
@@ -29,9 +34,11 @@ class LoginViewModel @Inject constructor(
 
     fun connect(nickname: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _navigate.postValue(false)
+//            navigateListeners.postValue(false)
+            mutableNavigate.postValue(false)
             repository.connect(nickname)
-            _navigate.postValue(true)
+//            navigateListeners.postValue(true)
+            mutableNavigate.postValue(true)
         }
     }
 
@@ -43,7 +50,8 @@ class LoginViewModel @Inject constructor(
     }
 
     fun forget() {
-        _navigate.postValue(false)
+//        navigateListeners.postValue(false)
+        mutableNavigate.postValue(false)
     }
 
     fun saveNickname(name: String, checked: Boolean) {

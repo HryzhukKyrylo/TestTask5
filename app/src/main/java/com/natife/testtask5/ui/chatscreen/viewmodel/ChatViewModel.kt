@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.natife.testtask5.data.model.MessageDto
-import com.natife.testtask5.data.model.Payload
 import com.natife.testtask5.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,14 +22,14 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             repository.getMessages().collect {
                 withContext(Dispatchers.Main) {
-                    _messages.value = it
+                    messagesListener.value = it
                 }
             }
         }
     }
 
-    private val _messages = MutableLiveData<MessageDto>()
-    val messages: LiveData<MessageDto> = _messages
+    private val messagesListener = MutableLiveData<MessageDto>()
+    val messages: LiveData<MessageDto> = messagesListener
 
     fun sendMessage(idUser: String, message: String) {
         viewModelScope.launch(Dispatchers.IO) {
