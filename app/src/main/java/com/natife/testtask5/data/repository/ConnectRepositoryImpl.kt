@@ -12,9 +12,9 @@ class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
 
     private val mBuf: ByteArray by lazy { ByteArray(1024) }
 
-//    private val dstIP = "10.0.2.2" //for comp
+    private val dstIP = "10.0.2.2" //for comp
 
-    private val dstIP = "255.255.255.255" // for phone
+//    private val dstIP = "255.255.255.255" // for phone
     private val dstPort = 8888
 
     private var ip = ""

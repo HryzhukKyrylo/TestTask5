@@ -10,16 +10,16 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.natife.testtask5.R
 import com.natife.testtask5.databinding.FragmentListUsersScreenBinding
-import com.natife.testtask5.ui.listusersscreen.adapter.CustomRecyclerAdapter
-import com.natife.testtask5.ui.listusersscreen.viewmodel.UserViewModel
+import com.natife.testtask5.ui.listusersscreen.adapter.ListUsersAdapter
+import com.natife.testtask5.ui.listusersscreen.viewmodel.ListUsersViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ListUsersScreenFragment : Fragment() {
 
     private var binding: FragmentListUsersScreenBinding? = null
-    private val viewModel: UserViewModel by viewModels()
-    private var adapter: CustomRecyclerAdapter? = null
+    private val viewModel: ListUsersViewModel by viewModels()
+    private var adapter: ListUsersAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,7 +47,8 @@ class ListUsersScreenFragment : Fragment() {
                     recyclerView.visibility = View.VISIBLE
                 }
 
-                adapter?.updateLiseUsers(it)
+                adapter?.submitList(it)
+//                adapter?.updateLiseUsers(it)
             } else {
                 binding?.apply {
                     noUsersTextView.visibility = View.VISIBLE
@@ -59,7 +60,7 @@ class ListUsersScreenFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        adapter = CustomRecyclerAdapter { user ->
+        adapter = ListUsersAdapter { user ->
             val bundle = bundleOf(USER_ARG to user)
             findNavController().navigate(
                 R.id.action_listUsersScreenFragment_to_chatScreenFragment,

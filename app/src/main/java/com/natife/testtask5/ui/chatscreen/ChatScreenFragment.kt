@@ -91,7 +91,6 @@ class ChatScreenFragment : Fragment() {
             if (messages != null) {
                 adapter?.add(messages)
             }
-
         }
     }
 

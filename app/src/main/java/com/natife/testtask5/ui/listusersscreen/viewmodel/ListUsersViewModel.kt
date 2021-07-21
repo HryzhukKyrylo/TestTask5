@@ -11,7 +11,7 @@ import com.natife.testtask5.data.model.User
 import javax.inject.Inject
 
 @HiltViewModel
-class UserViewModel @Inject constructor(
+class ListUsersViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
@@ -34,5 +34,4 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    fun getId() = repository.getId()
 }
