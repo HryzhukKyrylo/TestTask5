@@ -17,7 +17,9 @@ interface Repository {
 
     suspend fun sendMyMessage(idUser: String, message: String)
 
-    fun getId() :String
+    fun getId(): String
 
     fun stopFetchUsers()
+
+    suspend fun disconnect()
 }

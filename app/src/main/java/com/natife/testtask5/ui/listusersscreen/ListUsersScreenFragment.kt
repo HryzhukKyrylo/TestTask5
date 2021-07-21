@@ -82,6 +82,7 @@ class ListUsersScreenFragment : Fragment() {
                 override fun handleOnBackPressed() {
                     if (backPressed + 2000 > System.currentTimeMillis()) {
                         isEnabled = false
+                        viewModel.disconnect()
                         activity?.onBackPressed()
                     } else
                         Toast.makeText(

@@ -37,8 +37,14 @@ class ListUsersViewModel @Inject constructor(
         }
     }
 
-     fun stopFetchUsers() {
+    fun stopFetchUsers() {
         repository.stopFetchUsers()
+    }
+
+    fun disconnect() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.disconnect()
+        }
     }
 
 }

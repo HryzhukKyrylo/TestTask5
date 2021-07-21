@@ -47,4 +47,8 @@ class SharedRepositoryImpl @Inject constructor(
         cycleUsers = false
     }
 
+    override suspend fun disconnect() {
+        serverRepository.disconnect()
+    }
+
 }

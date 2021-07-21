@@ -18,4 +18,6 @@ interface ServerRepository {
     fun getMessages(): SharedFlow<MessageDto>
 
     fun getId(): String
+
+    suspend fun disconnect()
 }
