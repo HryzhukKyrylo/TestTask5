@@ -20,21 +20,11 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideConnectRepository(connect: ConnectRepositoryImpl):ConnectServerRepository = connect
-
-
-    @Provides
-    @Singleton
-    fun provideServerRepository(server: ServerRepositoryImpl):ServerRepository = server
-
-    @Provides
-    @Singleton
-    fun provideSharedRepository(connect : ConnectServerRepository, server: ServerRepository) :Repository =
-        SharedRepositoryImpl(connect, server)
-
-    @Provides
-    @Singleton
     fun providePreferences(@ApplicationContext appContext: Context) : SharedPreferences =
     appContext.getSharedPreferences(CUSTOM_PREF_NAME, Context.MODE_PRIVATE)
+    @Provides
+    @Singleton
+    fun provideSharedRepository(connect : ConnectServerRepository, server: ServerRepository) : Repository =
+        SharedRepositoryImpl(connect,server)
 
 }

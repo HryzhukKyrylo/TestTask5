@@ -1,9 +1,6 @@
 package com.natife.testtask5.util
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 class CustomScope : CoroutineScope {
@@ -14,6 +11,10 @@ class CustomScope : CoroutineScope {
         get() = Dispatchers.IO + parentJob
 
     fun stop() {
-        parentJob.cancel()
+//        parentJob.children.forEach {
+//            it.cancel()
+//        }
+        // some
+        parentJob.cancelChildren()
     }
 }

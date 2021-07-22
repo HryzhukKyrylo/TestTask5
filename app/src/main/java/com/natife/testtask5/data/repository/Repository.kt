@@ -1,7 +1,6 @@
 package com.natife.testtask5.data.repository
 
 import com.natife.testtask5.data.model.MessageDto
-import com.natife.testtask5.data.model.Payload
 import kotlinx.coroutines.flow.SharedFlow
 import com.natife.testtask5.data.model.User
 
@@ -15,11 +14,15 @@ interface Repository {
 
     suspend fun getMessages(): SharedFlow<MessageDto>
 
+    suspend fun getConnection(): SharedFlow<Boolean>
+
     suspend fun sendMyMessage(idUser: String, message: String)
 
     fun getId(): String
 
     fun stopFetchUsers()
+
+    suspend fun reconnect()
 
     suspend fun disconnect()
 }

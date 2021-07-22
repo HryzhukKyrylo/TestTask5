@@ -8,6 +8,7 @@ import com.natife.testtask5.data.model.User
 import com.natife.testtask5.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,16 +21,30 @@ class ListUsersViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getUsers().collect {
-                withContext(Dispatchers.Main) {
-                    usersListeners.value = it
+            async {
+                repository.getUsers().collect {
+                    withContext(Dispatchers.Main) {
+                        mutableUsers.value = it
+                    }
                 }
             }
+            async {
+                repository.getConnection().collect {
+                    withContext(Dispatchers.Main) {
+                        mutableConnection.value = it
+                    }
+                }
+            }
+
         }
     }
 
-    private val usersListeners = MutableLiveData<List<User>>()
-    val users: LiveData<List<User>> = usersListeners
+    private val mutableUsers = MutableLiveData<List<User>>()
+    val users: LiveData<List<User>> = mutableUsers
+
+    private val mutableConnection = MutableLiveData<Boolean>()
+    val connection: LiveData<Boolean> = mutableConnection
+
 
     fun fetchUsers() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -39,6 +54,12 @@ class ListUsersViewModel @Inject constructor(
 
     fun stopFetchUsers() {
         repository.stopFetchUsers()
+    }
+
+    fun reconnect() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.reconnect()
+        }
     }
 
     fun disconnect() {

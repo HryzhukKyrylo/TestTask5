@@ -23,7 +23,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ChatScreenFragment : Fragment() {
     private var binding: FragmentChatScreenBinding? = null
-    private var adapter: ChatAdapter? = null
+    private val adapter: ChatAdapter by lazy {
+        ChatAdapter(chatViewModel.getId())
+    }
 
     @Inject
     lateinit var chatProfileFactory: ChatViewModel.AssistedFactory
@@ -82,7 +84,6 @@ class ChatScreenFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        adapter = ChatAdapter(chatViewModel.getId())
         binding?.chatRecyclerAdapter?.layoutManager = LinearLayoutManager(requireContext())
         binding?.chatRecyclerAdapter?.adapter = adapter
     }
@@ -103,14 +104,13 @@ class ChatScreenFragment : Fragment() {
 
         chatViewModel.messages.observe(viewLifecycleOwner) { messages ->
             if (messages != null) {
-                adapter?.add(messages)
+                adapter.add(messages)
             }
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        adapter = null
         binding = null
     }
 }

@@ -10,40 +10,35 @@ import com.natife.testtask5.data.model.User
 import com.natife.testtask5.databinding.ItemListBinding
 
 class ListUsersAdapter(private val itemClick: (User) -> Unit) :
-    ListAdapter<User, ListUsersAdapter.BaseUserViewHolder<ViewBinding>>
+    ListAdapter<User, ListUsersAdapter.ListUserViewHolder>
         (ListUsersDifferenceCallback()) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BaseUserViewHolder<ViewBinding> {
+    ): ListUserViewHolder {
         return ListUserViewHolder(
             ItemListBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-        ) as BaseUserViewHolder<ViewBinding>
+        )
     }
 
-    override fun onBindViewHolder(holder: BaseUserViewHolder<ViewBinding>, position: Int) {
+    override fun onBindViewHolder(holder: ListUserViewHolder, position: Int) {
         holder.bind(getItem(position), itemClick)
     }
 
-    class ListUserViewHolder(binding: ItemListBinding) :
-        BaseUserViewHolder<ItemListBinding>(binding) {
-        override fun bind(user: User, itemClick: (User) -> Unit) {
+    class ListUserViewHolder(private val binding: ItemListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+         fun bind(user: User, itemClick: (User) -> Unit) {
             binding.nameTextView.text = user.name
             binding.cardItem.setOnClickListener {
                 itemClick(user)
             }
         }
 
-    }
-
-    abstract class BaseUserViewHolder<VB : ViewBinding>(protected val binding: VB) :
-        RecyclerView.ViewHolder(binding.root) {
-        abstract fun bind(user: User, itemClick: (User) -> Unit)
     }
 
     class ListUsersDifferenceCallback : DiffUtil.ItemCallback<User>() {

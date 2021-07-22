@@ -14,6 +14,7 @@ import com.natife.testtask5.R
 import com.natife.testtask5.databinding.FragmentListUsersScreenBinding
 import com.natife.testtask5.ui.listusersscreen.adapter.ListUsersAdapter
 import com.natife.testtask5.ui.listusersscreen.viewmodel.ListUsersViewModel
+import com.natife.testtask5.util.showSnack
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,7 +22,15 @@ class ListUsersScreenFragment : Fragment() {
 
     private var binding: FragmentListUsersScreenBinding? = null
     private val viewModel: ListUsersViewModel by viewModels()
-    private var adapter: ListUsersAdapter? = null
+    private val adapter: ListUsersAdapter by lazy {
+        ListUsersAdapter { user ->
+            val bundle = bundleOf(USER_ARG to user)
+            findNavController().navigate(
+                R.id.action_listUsersScreenFragment_to_chatScreenFragment,
+                bundle
+            )
+        }
+    }
     private var backPressed = 0L
 
 
@@ -42,6 +51,14 @@ class ListUsersScreenFragment : Fragment() {
 
     private fun initListener() {
         viewModel.fetchUsers()
+        viewModel.connection.observe(viewLifecycleOwner){ connection ->
+            if(!connection){
+                binding?.root?.showSnack("Disconnect", "Retry"){
+                    viewModel.reconnect()
+                }
+            }
+        }
+
         binding?.usersProgressBar?.visibility = View.VISIBLE
 
         viewModel.users.observe(viewLifecycleOwner) {
@@ -52,7 +69,7 @@ class ListUsersScreenFragment : Fragment() {
                     recyclerView.visibility = View.VISIBLE
                 }
 
-                adapter?.submitList(it)
+                adapter.submitList(it)
             } else {
                 binding?.apply {
                     noUsersTextView.visibility = View.VISIBLE
@@ -64,13 +81,6 @@ class ListUsersScreenFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        adapter = ListUsersAdapter { user ->
-            val bundle = bundleOf(USER_ARG to user)
-            findNavController().navigate(
-                R.id.action_listUsersScreenFragment_to_chatScreenFragment,
-                bundle
-            )
-        }
         binding?.recyclerView?.adapter = adapter
     }
 

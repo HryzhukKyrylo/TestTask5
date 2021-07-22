@@ -12,18 +12,18 @@ class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
 
     private val dstIP = "10.0.2.2" //for comp
 
-//        private val dstIP = "255.255.255.255" // for phone
+    //        private val dstIP = "255.255.255.255" // for phone
     private val dstPort = 8888
-
-    private var ip = ""
     private var rerequest = true
 
-    override fun sendPacket() {
+    override fun sendPacket(): String {
         var mSocket: DatagramSocket
         val arrayByte = ByteArray(1024)
-        val sendPacket = DatagramPacket(arrayByte, arrayByte.size, InetAddress.getByName(dstIP), dstPort)
+        val sendPacket =
+            DatagramPacket(arrayByte, arrayByte.size, InetAddress.getByName(dstIP), dstPort)
         val listenPacket = DatagramPacket(arrayByte, arrayByte.size)
         val gson = Gson()
+        val result = ""
 
         while (rerequest) {
             try {
@@ -32,16 +32,14 @@ class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
                 }
                 mSocket.send(sendPacket)
                 mSocket.receive(listenPacket)
-                val result = String(listenPacket.data, 0, listenPacket.length)
+                var result = String(listenPacket.data, 0, listenPacket.length)
                 val res: UdpDto = gson.fromJson(result, UdpDto::class.java)
-                ip = res.ip
-                return
+                result = res.ip
+                return result
             } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
+        return result
     }
-
-    override fun getIp() = ip
-
 }

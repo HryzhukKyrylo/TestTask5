@@ -7,6 +7,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.natife.testtask5.R
 import com.natife.testtask5.databinding.ActivityMainBinding
+import com.natife.testtask5.util.showSnack
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,4 +37,5 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         binding = null
     }
+
 }

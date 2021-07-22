@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.natife.testtask5.R
 import com.natife.testtask5.databinding.FragmentLoginScreenBinding
+import com.natife.testtask5.ui.MainActivity
 import com.natife.testtask5.ui.loginscreen.viewmodel.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

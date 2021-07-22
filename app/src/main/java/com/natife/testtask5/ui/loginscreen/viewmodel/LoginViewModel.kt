@@ -1,6 +1,7 @@
 package com.natife.testtask5.ui.loginscreen.viewmodel
 
 import android.content.SharedPreferences
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,6 +26,7 @@ class LoginViewModel @Inject constructor(
 
     private val preferencesSaveNickname = MutableLiveData<String>()
     val savedNickname: LiveData<String> = preferencesSaveNickname
+
     private val preferencesRememberNickname = MutableLiveData<Boolean>()
     val rememberNickname: LiveData<Boolean> = preferencesRememberNickname
 

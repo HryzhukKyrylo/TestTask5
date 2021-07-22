@@ -2,10 +2,7 @@ package com.natife.testtask5.data.repository
 
 import com.natife.testtask5.data.model.MessageDto
 import com.natife.testtask5.data.model.User
-import com.natife.testtask5.util.CustomScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SharedRepositoryImpl @Inject constructor(
@@ -13,22 +10,17 @@ class SharedRepositoryImpl @Inject constructor(
     private val serverRepository: ServerRepository
 ) : Repository {
 
-    private val scope = CustomScope()
-    private var cycleUsers = true
+    private var nickname = ""
+    private var ip = ""
 
     override suspend fun connect(nickname: String) {
-        connectRepository.sendPacket()
-        serverRepository.connectSocket(connectRepository.getIp(), nickname)
+        this.nickname = nickname
+        ip = connectRepository.sendPacket()
+        serverRepository.connectSocket(ip, nickname)
     }
 
     override suspend fun startFetchUsers() {
-        cycleUsers = true
-        scope.launch {
-            while (cycleUsers) {
-                serverRepository.fetchUsers()
-                delay(10000L)
-            }
-        }
+        serverRepository.fetchUsers()
     }
 
     override fun getUsers(): SharedFlow<List<User>> =
@@ -37,6 +29,9 @@ class SharedRepositoryImpl @Inject constructor(
     override suspend fun getMessages(): SharedFlow<MessageDto> =
         serverRepository.getMessages()
 
+    override suspend fun getConnection(): SharedFlow<Boolean> =
+        serverRepository.getConnection()
+
     override suspend fun sendMyMessage(idUser: String, message: String) {
         serverRepository.sendMyMessage(idUser, message)
     }
@@ -44,7 +39,11 @@ class SharedRepositoryImpl @Inject constructor(
     override fun getId() = serverRepository.getId()
 
     override fun stopFetchUsers() {
-        cycleUsers = false
+        serverRepository.stopFetchUsers()
+    }
+
+    override suspend fun reconnect() {
+        connect(nickname)
     }
 
     override suspend fun disconnect() {

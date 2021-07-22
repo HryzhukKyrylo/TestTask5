@@ -18,9 +18,6 @@ class ChatViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.Main){
-                userListener.value = userArg
-            }
             repository.getMessages().collect {
                 withContext(Dispatchers.Main) {
                     messagesListener.value = it
@@ -32,7 +29,7 @@ class ChatViewModel @AssistedInject constructor(
     private val messagesListener = MutableLiveData<MessageDto>()
     val messages: LiveData<MessageDto> = messagesListener
 
-    private val userListener = MutableLiveData<User?>()
+    private val userListener = MutableLiveData<User?>(userArg)
     val user: LiveData<User?> = userListener
 
     fun sendMessage( message: String) {
