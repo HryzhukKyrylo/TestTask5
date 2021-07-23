@@ -71,11 +71,12 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
         mutableMessages.emit(objectMessageDto)
     }
 
-    override fun connectSocket(ip: String, nickname: String) {
+    override suspend fun connectSocket(ip: String, nickname: String) {
         try {
             serverIP = ip
             socket = Socket(serverIP, serverPort)
             myName = nickname
+            mutableConnection.emit(true)
             startListenServer()
 
         } catch (socketException: SocketException) {
@@ -98,7 +99,7 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
         customScope.launch {
             while (cycleUsers) {
                 sendMessageToServer(message)
-                delay(10000L)
+                delay(15000L)
             }
         }
     }
@@ -215,6 +216,6 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
         socket?.close()
         socket = null
 
-        customScope.stop()
+        customScope.cancelChildren()
     }
 }

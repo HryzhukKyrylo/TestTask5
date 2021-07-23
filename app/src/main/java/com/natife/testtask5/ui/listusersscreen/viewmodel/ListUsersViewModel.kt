@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.natife.testtask5.data.model.User
 import com.natife.testtask5.data.repository.Repository
+import com.natife.testtask5.util.CustomScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,23 +19,22 @@ class ListUsersViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            async {
-                repository.getUsers().collect {
-                    withContext(Dispatchers.Main) {
-                        mutableUsers.value = it
-                    }
-                }
-            }
-            async {
-                repository.getConnection().collect {
-                    withContext(Dispatchers.Main) {
-                        mutableConnection.value = it
-                    }
-                }
-            }
+    private val coroutineScope = CustomScope()
 
+    init {
+        coroutineScope.launch {
+            repository.getConnection().collect {
+                withContext(Dispatchers.Main) {
+                    mutableConnection.value = it
+                }
+            }
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getUsers().collect {
+                withContext(Dispatchers.Main) {
+                    mutableUsers.value = it
+                }
+            }
         }
     }
 
@@ -69,4 +68,8 @@ class ListUsersViewModel @Inject constructor(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        coroutineScope.cancelChildren()
+    }
 }

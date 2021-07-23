@@ -10,7 +10,7 @@ class CustomScope : CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + parentJob
 
-    fun stop() {
+    fun cancelChildren() {
 //        parentJob.children.forEach {
 //            it.cancel()
 //        }

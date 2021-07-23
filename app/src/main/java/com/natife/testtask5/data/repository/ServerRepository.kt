@@ -8,7 +8,7 @@ interface ServerRepository {
 
     suspend fun sendMyMessage(idUser: String, message: String)
 
-    fun connectSocket(ip: String, nickname: String)
+    suspend fun connectSocket(ip: String, nickname: String)
 
     suspend fun fetchUsers()
 

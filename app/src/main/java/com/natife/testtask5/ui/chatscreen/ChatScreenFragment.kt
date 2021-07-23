@@ -18,6 +18,7 @@ import com.natife.testtask5.ui.listusersscreen.ListUsersScreenFragment
 import com.natife.testtask5.util.hideSoftKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import com.natife.testtask5.data.model.User
+import com.natife.testtask5.util.showSnack
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -89,6 +90,14 @@ class ChatScreenFragment : Fragment() {
     }
 
     private fun initListener() {
+        chatViewModel.connection.observe(viewLifecycleOwner){ connection ->
+            if(!connection){
+                binding?.root?.showSnack("Disconnect", "Retry"){
+                    chatViewModel.reconnect()
+                }
+            }
+        }
+
         binding?.messageText?.setOnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_SEND) {
                 chatViewModel.sendMessage(binding?.messageText?.text.toString())
