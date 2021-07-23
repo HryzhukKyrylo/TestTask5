@@ -86,7 +86,10 @@ class ChatScreenFragment : Fragment() {
     private fun initListener() {
         chatViewModel.observeConnection.observe(viewLifecycleOwner) { connection ->
             if (!connection) {
-                binding?.root?.showSnack("Disconnect", "Retry") {
+                binding?.root?.showSnack(
+                    resources.getString(R.string.disconnect),
+                    resources.getString(R.string.retry)
+                ) {
                     chatViewModel.reconnectToServer()
                 }
             }
