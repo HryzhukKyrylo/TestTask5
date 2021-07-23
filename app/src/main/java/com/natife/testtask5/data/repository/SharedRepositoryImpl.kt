@@ -11,16 +11,15 @@ class SharedRepositoryImpl @Inject constructor(
 ) : Repository {
 
     private var nickname = ""
-    private var ip = ""
 
-    override suspend fun connect(nickname: String) {
+    override suspend fun connectToServer(nickname: String) {
         this.nickname = nickname
-        ip = connectRepository.sendPacket()
+        val ip = connectRepository.requestIp()
         serverRepository.connectSocket(ip, nickname)
     }
 
-    override suspend fun startFetchUsers() {
-        serverRepository.fetchUsers()
+    override suspend fun startRequestingUsers() {
+        serverRepository.startRequestingUsers()
     }
 
     override fun getUsers(): SharedFlow<List<User>> =
@@ -32,22 +31,22 @@ class SharedRepositoryImpl @Inject constructor(
     override suspend fun getConnection(): SharedFlow<Boolean> =
         serverRepository.getConnection()
 
+    override fun getId() = serverRepository.getId()
+
     override suspend fun sendMyMessage(idUser: String, message: String) {
         serverRepository.sendMyMessage(idUser, message)
     }
 
-    override fun getId() = serverRepository.getId()
-
-    override fun stopFetchUsers() {
-        serverRepository.stopFetchUsers()
+    override fun stopRequestingUsers() {
+        serverRepository.stopRequestingUsers()
     }
 
-    override suspend fun reconnect() {
-        connect(nickname)
+    override suspend fun reconnectToServer() {
+        connectToServer(nickname)
     }
 
-    override suspend fun disconnect() {
-        serverRepository.disconnect()
+    override suspend fun disconnectToServer() {
+        serverRepository.disconnectToServer()
     }
 
 }

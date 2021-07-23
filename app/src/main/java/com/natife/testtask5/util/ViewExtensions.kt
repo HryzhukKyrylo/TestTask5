@@ -1,23 +1,21 @@
 package com.natife.testtask5.util
 
-import android.content.Context
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
-
 
 fun View.showSnack(
     message: String,
     action: String = "",
     actionListener: () -> Unit = {}
 ): Snackbar {
-    val snackbar = Snackbar.make(this, message, Snackbar.LENGTH_SHORT)
+    val snackBar = Snackbar.make(this, message, Snackbar.LENGTH_SHORT)
     if (action != "") {
-        snackbar.duration = Snackbar.LENGTH_INDEFINITE
-        snackbar.setAction(action) {
+        snackBar.duration = Snackbar.LENGTH_INDEFINITE
+        snackBar.setAction(action) {
             actionListener()
-            snackbar.dismiss()
+            snackBar.dismiss()
         }
     }
-    snackbar.show()
-    return snackbar
+    snackBar.show()
+    return snackBar
 }

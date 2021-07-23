@@ -24,7 +24,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ChatScreenFragment : Fragment() {
     private var binding: FragmentChatScreenBinding? = null
-    private val adapter: ChatAdapter by lazy {
+    private val chatAdapter: ChatAdapter by lazy {
         ChatAdapter(chatViewModel.getId())
     }
 
@@ -55,67 +55,66 @@ class ChatScreenFragment : Fragment() {
         initListener()
     }
 
-    private fun checkUser() {
-        chatViewModel.user.observe(viewLifecycleOwner) {
-            if (it == null) {
-                findNavController().popBackStack()
-                return@observe
-            } else {
-                binding?.nameUserView?.text = it.name
-            }
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity?)?.supportActionBar?.hide()
     }
 
-    override fun onStop() {
-        super.onStop()
-        (activity as AppCompatActivity?)?.supportActionBar?.show()
-
+    private fun checkUser() {
+        chatViewModel.observeUser.observe(viewLifecycleOwner) { user ->
+            if (user == null) {
+                findNavController().popBackStack()
+                return@observe
+            } else {
+                binding?.userNameTextView?.text = user.name
+            }
+        }
     }
 
     private fun initToolbar() {
-        binding?.toolbar?.setNavigationIcon(R.drawable.ic_baseline_back)
-        binding?.toolbar?.setNavigationOnClickListener {
+        binding?.chatToolbar?.setNavigationIcon(R.drawable.ic_baseline_back)
+        binding?.chatToolbar?.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
     }
 
     private fun initAdapter() {
-        binding?.chatRecyclerAdapter?.layoutManager = LinearLayoutManager(requireContext())
-        binding?.chatRecyclerAdapter?.adapter = adapter
+        binding?.chatRecyclerView?.layoutManager = LinearLayoutManager(requireContext())
+        binding?.chatRecyclerView?.adapter = chatAdapter
     }
 
     private fun initListener() {
-        chatViewModel.connection.observe(viewLifecycleOwner){ connection ->
-            if(!connection){
-                binding?.root?.showSnack("Disconnect", "Retry"){
-                    chatViewModel.reconnect()
+        chatViewModel.observeConnection.observe(viewLifecycleOwner) { connection ->
+            if (!connection) {
+                binding?.root?.showSnack("Disconnect", "Retry") {
+                    chatViewModel.reconnectToServer()
                 }
             }
         }
 
-        binding?.messageText?.setOnEditorActionListener { _, id, _ ->
+        binding?.messageEditText?.setOnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_SEND) {
-                chatViewModel.sendMessage(binding?.messageText?.text.toString())
+                chatViewModel.sendMessage(binding?.messageEditText?.text.toString())
                 activity?.hideSoftKeyboard()
                 binding?.apply {
-                    messageText.setText("")
-                    messageText.clearFocus()
-                    messageText.isCursorVisible = false
+                    messageEditText.setText("")
+                    messageEditText.clearFocus()
+                    messageEditText.isCursorVisible = false
                 }
             }
             true
         }
 
-        chatViewModel.messages.observe(viewLifecycleOwner) { messages ->
+        chatViewModel.observeMessage.observe(viewLifecycleOwner) { messages ->
             if (messages != null) {
-                adapter.add(messages)
+                chatAdapter.add(messages)
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (activity as AppCompatActivity?)?.supportActionBar?.show()
     }
 
     override fun onDestroyView() {

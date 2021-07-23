@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import com.natife.testtask5.data.model.User
 import com.natife.testtask5.databinding.ItemListBinding
 
@@ -33,8 +32,8 @@ class ListUsersAdapter(private val itemClick: (User) -> Unit) :
     class ListUserViewHolder(private val binding: ItemListBinding) :
         RecyclerView.ViewHolder(binding.root) {
          fun bind(user: User, itemClick: (User) -> Unit) {
-            binding.nameTextView.text = user.name
-            binding.cardItem.setOnClickListener {
+            binding.userNameTextView.text = user.name
+            binding.userCardView.setOnClickListener {
                 itemClick(user)
             }
         }

@@ -1,27 +1,23 @@
 package com.natife.testtask5.ui.loginscreen
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.natife.testtask5.R
 import com.natife.testtask5.databinding.FragmentLoginScreenBinding
-import com.natife.testtask5.ui.MainActivity
 import com.natife.testtask5.ui.loginscreen.viewmodel.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LoginScreenFragment : Fragment() {
     private var binding: FragmentLoginScreenBinding? = null
-    private val viewModel: LoginViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,32 +34,32 @@ class LoginScreenFragment : Fragment() {
     }
 
     private fun initSettings() {
-        viewModel.initSettings()
+        loginViewModel.initSettings()
     }
 
     private fun initListeners() {
 
-        viewModel.rememberNickname.observe(viewLifecycleOwner) { remember ->
+        loginViewModel.observeRememberNickname.observe(viewLifecycleOwner) { remember ->
             if (remember) {
-                binding?.rememberPassword?.isChecked = true
+                binding?.rememberPasswordSwitch?.isChecked = true
                 enabledButton(true)
             }
 
         }
 
-        viewModel.savedNickname.observe(viewLifecycleOwner) { name ->
+        loginViewModel.observeNickname.observe(viewLifecycleOwner) { name ->
             if (!name.isNullOrEmpty()) {
-                binding?.nickNameEditText?.setText(name)
+                binding?.nicknameEditText?.setText(name)
             }
         }
 
-        viewModel.navigate.observe(viewLifecycleOwner) { navigate ->
-            if (navigate) {
-                binding?.progressBar?.visibility = View.GONE
-                viewModel.forget()
-                viewModel.saveNickname(
-                    binding?.nickNameEditText?.text.toString(),
-                    binding?.rememberPassword?.isChecked ?: false
+        loginViewModel.observeNavigate.observe(viewLifecycleOwner) { navigate ->
+            if (navigate != null && navigate) {
+                binding?.loginProgressBar?.visibility = View.GONE
+//                loginViewModel.forget()
+                loginViewModel.saveNickname(
+                    binding?.nicknameEditText?.text.toString(),
+                    binding?.rememberPasswordSwitch?.isChecked ?: false
                 )
 
                 with(findNavController()) {
@@ -71,7 +67,7 @@ class LoginScreenFragment : Fragment() {
                     navigate(R.id.listUsersScreenFragment)
                 }
             } else {
-                binding?.progressBar?.visibility = View.VISIBLE
+                binding?.loginProgressBar?.visibility = View.VISIBLE
                 Toast.makeText(
                     requireContext(),
                     resources.getString(R.string.connect_to_server),
@@ -80,7 +76,7 @@ class LoginScreenFragment : Fragment() {
             }
         }
 
-        binding?.nickNameEditText?.addTextChangedListener(afterTextChanged = {
+        binding?.nicknameEditText?.addTextChangedListener(afterTextChanged = {
             if (!it.isNullOrEmpty()) {
                 enabledButton(true)
             } else {
@@ -89,7 +85,7 @@ class LoginScreenFragment : Fragment() {
         })
 
         binding?.loginButton?.setOnClickListener {
-            viewModel.connect(binding?.nickNameEditText?.text.toString())
+            loginViewModel.connect(binding?.nicknameEditText?.text.toString())
         }
     }
 

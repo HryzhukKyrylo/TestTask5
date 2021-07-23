@@ -39,32 +39,32 @@ class ListUsersViewModel @Inject constructor(
     }
 
     private val mutableUsers = MutableLiveData<List<User>>()
-    val users: LiveData<List<User>> = mutableUsers
+    val observeUsers: LiveData<List<User>> = mutableUsers
 
     private val mutableConnection = MutableLiveData<Boolean>()
-    val connection: LiveData<Boolean> = mutableConnection
+    val observConnection: LiveData<Boolean> = mutableConnection
 
 
-    fun fetchUsers() {
+    fun startRequestingUsers() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.startFetchUsers()
+            repository.startRequestingUsers()
         }
     }
 
-    fun stopFetchUsers() {
-        repository.stopFetchUsers()
+    fun stopRequestingUsers() {
+        repository.stopRequestingUsers()
     }
 
-    fun reconnect() {
+    fun reconnectToServer() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.reconnect()
-            repository.startFetchUsers()
+            repository.reconnectToServer()
+            repository.startRequestingUsers()
         }
     }
 
-    fun disconnect() {
+    fun disconnectToServer() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.disconnect()
+            repository.disconnectToServer()
         }
     }
 

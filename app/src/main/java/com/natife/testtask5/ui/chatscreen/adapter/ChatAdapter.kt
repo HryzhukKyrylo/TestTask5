@@ -51,16 +51,16 @@ class ChatAdapter(private val myId: String) :
     class UserViewHolder(binding: UserMessageBinding) :
         BaseMessageViewHolder<UserMessageBinding>(binding) {
         override fun bind(message: MessageDto) {
-            binding.userMessageText.text = message.message
-            binding.textDateUser.text = message.time
+            binding.userMessageTextView.text = message.message
+            binding.userDateTextView.text = message.time
         }
     }
 
     class MyViewHolder(binding: MyMessageBinding) :
         BaseMessageViewHolder<MyMessageBinding>(binding) {
         override fun bind(message: MessageDto) {
-            binding.myMessageText.text = message.message
-            binding.textDateMe.text = message.time
+            binding.myMessageTextView.text = message.message
+            binding.myDateTextView.text = message.time
         }
     }
 

@@ -8,7 +8,7 @@
     tools:context=".ui.chatscreen.ChatScreenFragment">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/chatToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
@@ -30,7 +30,7 @@
                 android:src="@drawable/ic_incognito" />
 
             <TextView
-                android:id="@+id/nameUserView"
+                android:id="@+id/user_name_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -47,19 +47,19 @@
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chatRecyclerAdapter"
+        android:id="@+id/chat_recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/messageText"
+        app:layout_constraintBottom_toTopOf="@+id/message_edit_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+        app:layout_constraintTop_toBottomOf="@+id/chatToolbar">
 
     </androidx.recyclerview.widget.RecyclerView>
 
     <EditText
-        android:id="@+id/messageText"
+        android:id="@+id/message_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

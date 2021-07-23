@@ -10,36 +10,39 @@ import javax.inject.Inject
 
 class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
 
-    private val dstIP = "10.0.2.2" //for comp
+    private val destinationIP = "10.0.2.2" //for comp
 
-//    private val dstIP = "255.255.255.255" // for phone
-    private val dstPort = 8888
-    private var rerequest = true
+    //    private val dstIP = "255.255.255.255" // for phone
+    private val destinationPort = 8888
+    private var requestCycle = true
 
-    override fun sendPacket(): String {
-        var mSocket: DatagramSocket
+    override fun requestIp(): String {
+        var datagramSocket: DatagramSocket
         val arrayByte = ByteArray(1024)
-        val sendPacket =
-            DatagramPacket(arrayByte, arrayByte.size, InetAddress.getByName(dstIP), dstPort)
-        val listenPacket = DatagramPacket(arrayByte, arrayByte.size)
+        val datagramPacket =
+            DatagramPacket(
+                arrayByte,
+                arrayByte.size,
+                InetAddress.getByName(destinationIP),
+                destinationPort
+            )
+        val requestPacket = DatagramPacket(arrayByte, arrayByte.size)
         val gson = Gson()
-        val result = ""
 
-        while (rerequest) {
+        while (requestCycle) {
             try {
-                mSocket = DatagramSocket().apply {
+                datagramSocket = DatagramSocket().apply {
                     soTimeout = 5000
                 }
-                mSocket.send(sendPacket)
-                mSocket.receive(listenPacket)
-                var result = String(listenPacket.data, 0, listenPacket.length)
-                val res: UdpDto = gson.fromJson(result, UdpDto::class.java)
-                result = res.ip
-                return result
+                datagramSocket.send(datagramPacket)
+                datagramSocket.receive(requestPacket)
+                var serverResponse = String(requestPacket.data, 0, requestPacket.length)
+                val requestedIp: UdpDto = gson.fromJson(serverResponse, UdpDto::class.java)
+                return requestedIp.ip
             } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
-        return result
+        return ""
     }
 }

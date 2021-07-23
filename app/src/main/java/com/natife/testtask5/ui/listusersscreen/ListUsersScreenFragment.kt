@@ -21,8 +21,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class ListUsersScreenFragment : Fragment() {
 
     private var binding: FragmentListUsersScreenBinding? = null
-    private val viewModel: ListUsersViewModel by viewModels()
-    private val adapter: ListUsersAdapter by lazy {
+    private val usersViewModel: ListUsersViewModel by viewModels()
+    private val usersAdapter: ListUsersAdapter by lazy {
         ListUsersAdapter { user ->
             val bundle = bundleOf(USER_ARG to user)
             findNavController().navigate(
@@ -31,7 +31,7 @@ class ListUsersScreenFragment : Fragment() {
             )
         }
     }
-    private var backPressed = 0L
+    private var timeBackPressed = 0L
 
 
     override fun onCreateView(
@@ -44,54 +44,57 @@ class ListUsersScreenFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onBackPressed()
+        initListenerBackPressed()
         initAdapter()
         initListener()
     }
 
     private fun initListener() {
-        viewModel.fetchUsers()
-        viewModel.connection.observe(viewLifecycleOwner){ connection ->
-            if(!connection){
-                binding?.root?.showSnack("Disconnect", "Retry"){
-                    viewModel.reconnect()
+        usersViewModel.startRequestingUsers()
+        usersViewModel.observConnection.observe(viewLifecycleOwner) { connection ->
+            if (!connection) {
+                binding?.root?.showSnack(
+                    resources.getString(R.string.disconnect),
+                    resources.getString(R.string.retry)
+                ) {
+                    usersViewModel.reconnectToServer()
                 }
             }
         }
 
         binding?.usersProgressBar?.visibility = View.VISIBLE
 
-        viewModel.users.observe(viewLifecycleOwner) {
-            if (!it.isNullOrEmpty()) {
+        usersViewModel.observeUsers.observe(viewLifecycleOwner) { listUsers ->
+            if (!listUsers.isNullOrEmpty()) {
                 binding?.apply {
-                    noUsersTextView.visibility = View.GONE
+                    noListUsersTextView.visibility = View.GONE
                     usersProgressBar.visibility = View.GONE
-                    recyclerView.visibility = View.VISIBLE
+                    listUsersRecyclerView.visibility = View.VISIBLE
                 }
 
-                adapter.submitList(it)
+                usersAdapter.submitList(listUsers)
             } else {
                 binding?.apply {
-                    noUsersTextView.visibility = View.VISIBLE
+                    noListUsersTextView.visibility = View.VISIBLE
                     usersProgressBar.visibility = View.GONE
-                    recyclerView.visibility = View.GONE
+                    listUsersRecyclerView.visibility = View.GONE
                 }
             }
         }
     }
 
     private fun initAdapter() {
-        binding?.recyclerView?.adapter = adapter
+        binding?.listUsersRecyclerView?.adapter = usersAdapter
     }
 
-    private fun onBackPressed() {
+    private fun initListenerBackPressed() {
         activity?.onBackPressedDispatcher?.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (backPressed + 2000 > System.currentTimeMillis()) {
+                    if (timeBackPressed + 2000 > System.currentTimeMillis()) {
                         isEnabled = false
-                        viewModel.disconnect()
+                        usersViewModel.disconnectToServer()
                         activity?.onBackPressed()
                     } else
                         Toast.makeText(
@@ -99,14 +102,14 @@ class ListUsersScreenFragment : Fragment() {
                             resources.getString(R.string.back_press),
                             Toast.LENGTH_SHORT
                         ).show()
-                    backPressed = System.currentTimeMillis()
+                    timeBackPressed = System.currentTimeMillis()
                 }
             })
     }
 
     override fun onPause() {
         super.onPause()
-        viewModel.stopFetchUsers()
+        usersViewModel.stopRequestingUsers()
     }
 
     override fun onDestroyView() {

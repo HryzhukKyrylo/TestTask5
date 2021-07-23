@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/userMessageText"
+            android:id="@+id/user_message_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
@@ -32,7 +32,7 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/textDateUser"
+        android:id="@+id/user_date_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#C0C0C0"

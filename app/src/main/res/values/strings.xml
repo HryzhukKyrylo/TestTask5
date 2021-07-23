@@ -13,6 +13,8 @@
     <string name="login_in">Login in</string>
     <string name="send_message">Enter message....</string>
     <string name="back_press">Нажмите еще раз для выхода!</string>
+    <string name="disconnect">Disconnect !</string>
+    <string name="retry">Retry</string>
 
     />
 </resources>

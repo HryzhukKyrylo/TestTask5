@@ -58,15 +58,15 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
 
     @SuppressLint("SimpleDateFormat")
     override suspend fun sendMyMessage(idUser: String, message: String) {
-        val sdf = SimpleDateFormat("hh:mm:ss")
-        val currentDate = sdf.format(Date())
+        val dateFormat = SimpleDateFormat("hh:mm:ss")
+        val currentDate = dateFormat.format(Date())
         val objectSendMessageDto =
             SendMessageDto(id = myId, receiver = idUser, message = message, time = currentDate)
         val objectMessageDto =
             MessageDto(from = User(id = myId, name = myName), message = message, time = currentDate)
-        val jsonSenMessageDto: String = gson.toJson(objectSendMessageDto)
+        val jsonSendMessageDto: String = gson.toJson(objectSendMessageDto)
         val actionMessage: String =
-            gson.toJson(BaseDto(BaseDto.Action.SEND_MESSAGE, jsonSenMessageDto))
+            gson.toJson(BaseDto(BaseDto.Action.SEND_MESSAGE, jsonSendMessageDto))
         sendMessageToServer(actionMessage)
         mutableMessages.emit(objectMessageDto)
     }
@@ -77,7 +77,7 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
             socket = Socket(serverIP, serverPort)
             myName = nickname
             mutableConnection.emit(true)
-            startListenServer()
+            startListenToServer()
 
         } catch (socketException: SocketException) {
             socketException.printStackTrace()
@@ -92,93 +92,96 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
 
     override fun getId(): String = myId
 
-    override suspend fun fetchUsers() {
-        val getUsers: String = gson.toJson(GetUsersDto(id = myId))
-        val message: String = gson.toJson(BaseDto(BaseDto.Action.GET_USERS, getUsers))
+    override suspend fun startRequestingUsers() {
+        val objectGetUsersDto: String = gson.toJson(GetUsersDto(id = myId))
+        val actionMessage: String =
+            gson.toJson(BaseDto(BaseDto.Action.GET_USERS, objectGetUsersDto))
         cycleUsers = true
         customScope.launch {
             while (cycleUsers) {
-                sendMessageToServer(message)
+                sendMessageToServer(actionMessage)
                 delay(15000L)
             }
         }
     }
 
-    override fun stopFetchUsers() {
+    override fun stopRequestingUsers() {
         cycleUsers = false
     }
 
-    private fun sendConnect() {
-        val connect: String = gson.toJson(ConnectDto(id = myId, name = myName))
-        val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.CONNECT, connect))
-        sendMessageToServer(messagePing)
+    private fun sendConnectToServer() {
+        val objectConnectDto: String = gson.toJson(ConnectDto(id = myId, name = myName))
+        val actionMessage: String = gson.toJson(BaseDto(BaseDto.Action.CONNECT, objectConnectDto))
+        sendMessageToServer(actionMessage)
     }
 
     private suspend fun startPing() {
         customScope.launch {
-            val ping: String = gson.toJson(PingDto(id = myId))
-            val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.PING, ping))
+            val objectPingDto: String = gson.toJson(PingDto(id = myId))
+            val actionMessage: String = gson.toJson(BaseDto(BaseDto.Action.PING, objectPingDto))
             while (cyclePing) {
-                sendMessageToServer(messagePing)
+                sendMessageToServer(actionMessage)
                 delay(10000L)
             }
         }
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun startListenServer() {
+    private fun startListenToServer() {
         customScope.launch(Dispatchers.IO) {
             try {
-                if (bufferedReader == null ) {
+                if (bufferedReader == null) {
                     bufferedReader = BufferedReader(InputStreamReader(socket?.getInputStream()))
                 }
                 while (cycleListen) {
-                    val line = bufferedReader?.readLine()
+                    val readLine = bufferedReader?.readLine()
 
-                    val res: BaseDto? = gson.fromJson(line ?: "", BaseDto::class.java)
+                    val responseFromServer: BaseDto? = gson.fromJson(readLine, BaseDto::class.java)
 
-                    when (res?.action) {
+                    when (responseFromServer?.action) {
                         BaseDto.Action.CONNECTED -> {
-                            val c: ConnectedDto =
-                                gson.fromJson(res.payload, ConnectedDto::class.java)
-                            myId = c.id
-                            sendConnect()
+                            val objectConnectedDto: ConnectedDto =
+                                gson.fromJson(responseFromServer.payload, ConnectedDto::class.java)
+                            myId = objectConnectedDto.id
+                            sendConnectToServer()
                             startPing()
                         }
                         BaseDto.Action.NEW_MESSAGE -> {
-                            val sdf = SimpleDateFormat("hh:mm:ss")
-                            val currentDate = sdf.format(Date())
-                            val newMessage: MessageDto =
-                                gson.fromJson(res.payload, MessageDto::class.java)
+                            val dateFormat = SimpleDateFormat("hh:mm:ss")
+                            val currentDate = dateFormat.format(Date())
+                            val objectMessageDto: MessageDto =
+                                gson.fromJson(responseFromServer.payload, MessageDto::class.java)
                                     .apply { time = currentDate }
-                            mutableMessages.emit(newMessage)
+                            mutableMessages.emit(objectMessageDto)
                         }
                         BaseDto.Action.USERS_RECEIVED -> {
-                            val receivedUsers: UsersReceivedDto =
-                                gson.fromJson(res.payload, UsersReceivedDto::class.java)
-                            mutableUsers.emit(receivedUsers.users)
+                            val objectUsersReceivedDto: UsersReceivedDto =
+                                gson.fromJson(
+                                    responseFromServer.payload,
+                                    UsersReceivedDto::class.java
+                                )
+                            mutableUsers.emit(objectUsersReceivedDto.users)
                         }
                         BaseDto.Action.PONG -> {
                             handlerPong()
                         }
                         else -> {
+                            //nothing)
                         }
                     }
-//                    } else {
-//                        continue
-//                    }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } catch (exception: Exception) {
+                exception.printStackTrace()
             }
         }
     }
 
-    override suspend fun disconnect() {
-        val disconnectDto: String = gson.toJson(DisconnectDto(id = myId, code = 1))
-        val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.DISCONNECT, disconnectDto))
-        sendMessageToServer(messagePing)
-        close()
+    override suspend fun disconnectToServer() {
+        val objectDisconnectDto: String = gson.toJson(DisconnectDto(id = myId, code = 1))
+        val actionMessage: String =
+            gson.toJson(BaseDto(BaseDto.Action.DISCONNECT, objectDisconnectDto))
+        sendMessageToServer(actionMessage)
+        closeAndNull()
     }
 
     private fun sendMessageToServer(message: String) {
@@ -194,7 +197,6 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
         }
     }
 
-
     private suspend fun handlerPong() {
         pongJob?.cancel()
         pongJob = customScope.launch {
@@ -202,11 +204,11 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
             withContext(Dispatchers.Main) {
                 mutableConnection.emit(false)
             }
-            disconnect()
+            disconnectToServer()
         }
     }
 
-    private fun close() {
+    private fun closeAndNull() {
         printWriter?.close()
         printWriter = null
 

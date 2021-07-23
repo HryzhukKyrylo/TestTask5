@@ -7,7 +7,7 @@
     tools:context=".ui.loginscreen.LoginScreenFragment">
 
     <EditText
-        android:id="@+id/nickNameEditText"
+        android:id="@+id/nickname_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -37,10 +37,10 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nickNameEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/nickname_edit_text" />
 
     <Switch
-        android:id="@+id/remember_password"
+        android:id="@+id/remember_password_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -52,7 +52,7 @@
         app:layout_constraintTop_toBottomOf="@+id/login_button" />
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/login_progress_bar"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

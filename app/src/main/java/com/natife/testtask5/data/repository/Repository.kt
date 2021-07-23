@@ -6,9 +6,9 @@ import com.natife.testtask5.data.model.User
 
 interface Repository {
 
-    suspend fun connect(nickname: String)
+    suspend fun connectToServer(nickname: String)
 
-    suspend fun startFetchUsers()
+    suspend fun startRequestingUsers()
 
     fun getUsers(): SharedFlow<List<User>>
 
@@ -20,9 +20,9 @@ interface Repository {
 
     fun getId(): String
 
-    fun stopFetchUsers()
+    fun stopRequestingUsers()
 
-    suspend fun reconnect()
+    suspend fun reconnectToServer()
 
-    suspend fun disconnect()
+    suspend fun disconnectToServer()
 }

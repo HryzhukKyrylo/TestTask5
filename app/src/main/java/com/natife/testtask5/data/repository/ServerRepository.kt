@@ -10,7 +10,7 @@ interface ServerRepository {
 
     suspend fun connectSocket(ip: String, nickname: String)
 
-    suspend fun fetchUsers()
+    suspend fun startRequestingUsers()
 
     fun getUsers(): SharedFlow<List<User>>
 
@@ -20,7 +20,7 @@ interface ServerRepository {
 
     fun getId(): String
 
-    suspend fun disconnect()
+    suspend fun disconnectToServer()
 
-    fun stopFetchUsers()
+    fun stopRequestingUsers()
 }

@@ -1,11 +1,11 @@
 package com.natife.testtask5.ui.chatscreen.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.natife.testtask5.data.model.MessageDto
 import com.natife.testtask5.data.model.User
 import com.natife.testtask5.data.repository.Repository
 import com.natife.testtask5.util.CustomScope
+import com.natife.testtask5.util.SingleLiveEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.*
@@ -28,21 +28,20 @@ class ChatViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             repository.getMessages().collect {
                 withContext(Dispatchers.Main) {
-                    messagesListener.value = it
+                    mutableMessage.value = it
                 }
             }
         }
-        Log.i("TAG", "ChatViewModel/init: initialized")
     }
 
-    private val messagesListener = MutableLiveData<MessageDto>()
-    val messages: LiveData<MessageDto> = messagesListener
+    private val mutableMessage = MutableLiveData<MessageDto>()
+    val observeMessage: LiveData<MessageDto> = mutableMessage
 
-    private val userListener = MutableLiveData<User?>(userArg)
-    val user: LiveData<User?> = userListener
+    private val mutableUser = MutableLiveData<User?>(userArg)
+    val observeUser: LiveData<User?> = mutableUser
 
-    private val mutableConnection = MutableLiveData<Boolean>()
-    val connection: LiveData<Boolean> = mutableConnection
+    private val mutableConnection = SingleLiveEvent<Boolean>()
+    val observeConnection: SingleLiveEvent<Boolean> = mutableConnection
 
     fun sendMessage(message: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -52,9 +51,9 @@ class ChatViewModel @AssistedInject constructor(
 
     fun getId() = repository.getId()
 
-    fun reconnect() {
+    fun reconnectToServer() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.reconnect()
+            repository.reconnectToServer()
         }
     }
 
@@ -78,5 +77,4 @@ class ChatViewModel @AssistedInject constructor(
             }
         }
     }
-
 }
