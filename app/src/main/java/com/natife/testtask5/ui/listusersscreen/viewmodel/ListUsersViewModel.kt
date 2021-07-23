@@ -59,6 +59,7 @@ class ListUsersViewModel @Inject constructor(
     fun reconnect() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.reconnect()
+            repository.startFetchUsers()
         }
     }
 

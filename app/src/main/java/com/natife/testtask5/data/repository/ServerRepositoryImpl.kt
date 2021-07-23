@@ -22,16 +22,14 @@ import javax.inject.Inject
 
 class ServerRepositoryImpl @Inject constructor() : ServerRepository {
 
-    private val scope = CustomScope()
+    private val customScope = CustomScope()
     private var pongJob: Job? = null
 
-    private lateinit var socket: Socket
-    private lateinit var writer: PrintWriter
+    private var socket: Socket? = null
+    private var printWriter: PrintWriter? = null
+    private var bufferedReader: BufferedReader? = null
 
-    //    private val reader: BufferedReader by lazy { BufferedReader(InputStreamReader(socket.getInputStream())) }
-    private lateinit var reader: BufferedReader
-
-    private val port = 6666
+    private val serverPort = 6666
     private var serverIP = ""
     private var myId = ""
     private var myName = ""
@@ -43,25 +41,19 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
 
 
     private val mutableUsers = MutableSharedFlow<List<User>>(
-        replay = 1,
-        extraBufferCapacity = 10,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
+        replay = 1, extraBufferCapacity = 10, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    private val users: SharedFlow<List<User>> = mutableUsers
+    private val observeUsers: SharedFlow<List<User>> = mutableUsers
 
     private val mutableMessages = MutableSharedFlow<MessageDto>(
-        replay = 1,
-        extraBufferCapacity = 10,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
+        replay = 1, extraBufferCapacity = 10, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    private val messages: SharedFlow<MessageDto> = mutableMessages
+    private val observeMessages: SharedFlow<MessageDto> = mutableMessages
 
     private val mutableConnection = MutableSharedFlow<Boolean>(
-        replay = 1,
-        extraBufferCapacity = 10,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
+        replay = 1, extraBufferCapacity = 10, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    private val connection: SharedFlow<Boolean> = mutableConnection
+    private val observeConnection: SharedFlow<Boolean> = mutableConnection
 
 
     @SuppressLint("SimpleDateFormat")
@@ -82,20 +74,20 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
     override fun connectSocket(ip: String, nickname: String) {
         try {
             serverIP = ip
-            socket = Socket(serverIP, port)
+            socket = Socket(serverIP, serverPort)
             myName = nickname
             startListenServer()
 
-        } catch (socket: SocketException) {
-            socket.printStackTrace()
+        } catch (socketException: SocketException) {
+            socketException.printStackTrace()
         }
     }
 
-    override fun getUsers(): SharedFlow<List<User>> = users
+    override fun getUsers(): SharedFlow<List<User>> = observeUsers
 
-    override fun getMessages(): SharedFlow<MessageDto> = messages
+    override fun getMessages(): SharedFlow<MessageDto> = observeMessages
 
-    override fun getConnection(): SharedFlow<Boolean> = connection
+    override fun getConnection(): SharedFlow<Boolean> = observeConnection
 
     override fun getId(): String = myId
 
@@ -103,7 +95,7 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
         val getUsers: String = gson.toJson(GetUsersDto(id = myId))
         val message: String = gson.toJson(BaseDto(BaseDto.Action.GET_USERS, getUsers))
         cycleUsers = true
-        scope.launch {
+        customScope.launch {
             while (cycleUsers) {
                 sendMessageToServer(message)
                 delay(10000L)
@@ -122,7 +114,7 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
     }
 
     private suspend fun startPing() {
-        scope.launch {
+        customScope.launch {
             val ping: String = gson.toJson(PingDto(id = myId))
             val messagePing: String = gson.toJson(BaseDto(BaseDto.Action.PING, ping))
             while (cyclePing) {
@@ -134,17 +126,17 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
 
     @SuppressLint("SimpleDateFormat")
     private fun startListenServer() {
-        scope.launch(Dispatchers.IO) {
+        customScope.launch(Dispatchers.IO) {
             try {
-                reader = BufferedReader(InputStreamReader(socket.getInputStream()))
+                if (bufferedReader == null ) {
+                    bufferedReader = BufferedReader(InputStreamReader(socket?.getInputStream()))
+                }
                 while (cycleListen) {
-//                    if (reader.ready()) {
+                    val line = bufferedReader?.readLine()
 
-                    val line = reader.readLine()
+                    val res: BaseDto? = gson.fromJson(line ?: "", BaseDto::class.java)
 
-                    val res: BaseDto = gson.fromJson(line, BaseDto::class.java)
-
-                    when (res.action) {
+                    when (res?.action) {
                         BaseDto.Action.CONNECTED -> {
                             val c: ConnectedDto =
                                 gson.fromJson(res.payload, ConnectedDto::class.java)
@@ -190,8 +182,10 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
 
     private fun sendMessageToServer(message: String) {
         try {
-            writer = PrintWriter(OutputStreamWriter(socket.getOutputStream()), true)
-            writer.println(message)
+            if (printWriter == null)
+                printWriter = PrintWriter(OutputStreamWriter(socket?.getOutputStream()), true)
+
+            printWriter?.println(message)
 
             Log.i("TAG", "ServerRepositoryImpl/sendMessageToServer: $message")
         } catch (e: Exception) {
@@ -202,7 +196,7 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
 
     private suspend fun handlerPong() {
         pongJob?.cancel()
-        pongJob = scope.launch {
+        pongJob = customScope.launch {
             delay(15000L)
             withContext(Dispatchers.Main) {
                 mutableConnection.emit(false)
@@ -212,9 +206,15 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
     }
 
     private fun close() {
-        reader.close()
-        writer.close()
-        socket.close()
-        scope.stop()
+        printWriter?.close()
+        printWriter = null
+
+        bufferedReader?.close()
+        bufferedReader = null
+
+        socket?.close()
+        socket = null
+
+        customScope.stop()
     }
 }
