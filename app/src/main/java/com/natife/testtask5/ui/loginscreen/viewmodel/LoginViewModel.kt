@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.natife.testtask5.data.repository.Repository
+import com.natife.core.data.repository.Repository
 import com.natife.testtask5.util.PreferenceHelper.savedLogIn
 import com.natife.testtask5.util.PreferenceHelper.savedNickname
 import com.natife.testtask5.util.SingleLiveEvent

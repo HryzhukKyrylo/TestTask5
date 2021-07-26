@@ -1,3 +1,3 @@
-package com.natife.testtask5.data.model
+package com.natife.core.data.model
 
 data class PingDto(val id: String) : Payload

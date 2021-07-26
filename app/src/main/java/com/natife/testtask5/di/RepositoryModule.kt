@@ -1,6 +1,6 @@
 package com.natife.testtask5.di
 
-import com.natife.testtask5.data.repository.*
+import com.natife.core.data.repository.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

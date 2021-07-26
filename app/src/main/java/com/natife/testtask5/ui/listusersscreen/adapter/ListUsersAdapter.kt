@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.natife.testtask5.data.model.User
+import com.natife.core.data.model.User
 import com.natife.testtask5.databinding.ItemListBinding
 
 class ListUsersAdapter(private val itemClick: (User) -> Unit) :

@@ -1,4 +1,4 @@
-package com.natife.testtask5.data.repository
+package com.natife.core.data.repository
 
 
 interface ConnectServerRepository {

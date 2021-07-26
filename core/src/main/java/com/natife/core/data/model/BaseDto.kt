@@ -1,4 +1,4 @@
-package com.natife.testtask5.data.model
+package com.natife.core.data.model
 
 data class BaseDto(val action: Action, val payload: String) {
 

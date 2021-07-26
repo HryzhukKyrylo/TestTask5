@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.natife.testtask5.data.model.MessageDto
+import com.natife.core.data.model.MessageDto
 import com.natife.testtask5.databinding.MyMessageBinding
 import com.natife.testtask5.databinding.UserMessageBinding
 

@@ -1,3 +1,3 @@
-package com.natife.testtask5.data.model
+package com.natife.core.data.model
 
 data class GetUsersDto(val id: String) : Payload

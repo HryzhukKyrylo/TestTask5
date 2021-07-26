@@ -4,7 +4,7 @@ package com.natife.testtask5.di
 import android.content.Context
 import android.content.SharedPreferences
 
-import com.natife.testtask5.data.repository.*
+import com.natife.core.data.repository.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

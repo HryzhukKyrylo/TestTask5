@@ -1,7 +1,7 @@
-package com.natife.testtask5.data.repository
+package com.natife.core.data.repository
 
 import com.google.gson.Gson
-import com.natife.testtask5.data.model.UdpDto
+import com.natife.core.data.model.UdpDto
 import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket

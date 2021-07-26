@@ -1,15 +1,14 @@
 package com.natife.testtask5.ui.chatscreen.viewmodel
 
 import androidx.lifecycle.*
-import com.natife.testtask5.data.model.MessageDto
-import com.natife.testtask5.data.model.User
-import com.natife.testtask5.data.repository.Repository
+import com.natife.core.data.model.MessageDto
+import com.natife.core.data.model.User
+import com.natife.core.data.repository.Repository
 import com.natife.testtask5.util.CustomScope
 import com.natife.testtask5.util.SingleLiveEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 
 class ChatViewModel @AssistedInject constructor(
     private val repository: Repository,

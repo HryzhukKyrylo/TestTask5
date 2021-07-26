@@ -1,8 +1,8 @@
-package com.natife.testtask5.data.repository
+package com.natife.core.data.repository
 
 import android.annotation.SuppressLint
 import com.google.gson.Gson
-import com.natife.testtask5.data.model.*
+import com.natife.core.data.model.*
 import com.natife.testtask5.util.CustomScope
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow

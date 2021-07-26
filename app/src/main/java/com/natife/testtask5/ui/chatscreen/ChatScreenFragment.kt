@@ -8,7 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.natife.testtask5.R
-import com.natife.testtask5.data.model.User
+import com.natife.core.data.model.User
 import com.natife.testtask5.databinding.FragmentChatScreenBinding
 import com.natife.testtask5.ui.base.BaseFragment
 import com.natife.testtask5.ui.chatscreen.adapter.ChatAdapter

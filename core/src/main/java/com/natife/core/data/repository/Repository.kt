@@ -1,8 +1,8 @@
-package com.natife.testtask5.data.repository
+package com.natife.core.data.repository
 
-import com.natife.testtask5.data.model.MessageDto
+import com.natife.core.data.model.MessageDto
 import kotlinx.coroutines.flow.SharedFlow
-import com.natife.testtask5.data.model.User
+import com.natife.core.data.model.User
 
 interface Repository {
 
