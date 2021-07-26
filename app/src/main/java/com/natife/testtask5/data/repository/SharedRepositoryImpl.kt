@@ -45,8 +45,8 @@ class SharedRepositoryImpl @Inject constructor(
         connectToServer(nickname)
     }
 
-    override suspend fun disconnectToServer() {
-        serverRepository.disconnectToServer()
+    override suspend fun disconnectFromServer() {
+        serverRepository.disconnectFromServer()
     }
 
 }

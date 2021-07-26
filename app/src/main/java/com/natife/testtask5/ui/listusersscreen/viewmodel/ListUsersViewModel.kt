@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.natife.testtask5.data.model.User
 import com.natife.testtask5.data.repository.Repository
-import com.natife.testtask5.util.CustomScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -59,9 +58,9 @@ class ListUsersViewModel @Inject constructor(
         }
     }
 
-    fun disconnectToServer() {
+    fun disconnectFromServer() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.disconnectToServer()
+            repository.disconnectFromServer()
         }
     }
 

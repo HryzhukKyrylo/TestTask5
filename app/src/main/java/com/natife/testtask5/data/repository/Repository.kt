@@ -24,5 +24,5 @@ interface Repository {
 
     suspend fun reconnectToServer()
 
-    suspend fun disconnectToServer()
+    suspend fun disconnectFromServer()
 }

@@ -51,7 +51,7 @@ class LoginScreenFragment : BaseFragment<FragmentLoginScreenBinding>() {
 //                loginViewModel.forget()
                 loginViewModel.saveNickname(
                     binding.nicknameEditText.text.toString(),
-                    binding?.rememberPasswordSwitch?.isChecked ?: false
+                    binding.rememberPasswordSwitch.isChecked ?: false
                 )
 
                 with(findNavController()) {
@@ -59,7 +59,7 @@ class LoginScreenFragment : BaseFragment<FragmentLoginScreenBinding>() {
                     navigate(R.id.listUsersScreenFragment)
                 }
             } else {
-                binding?.loginProgressBar?.visibility = View.VISIBLE
+                binding.loginProgressBar.visibility = View.VISIBLE
                 Toast.makeText(
                     requireContext(),
                     resources.getString(R.string.connect_to_server),
@@ -68,7 +68,7 @@ class LoginScreenFragment : BaseFragment<FragmentLoginScreenBinding>() {
             }
         }
 
-        binding?.nicknameEditText?.addTextChangedListener(afterTextChanged = {
+        binding.nicknameEditText.addTextChangedListener(afterTextChanged = {
             if (!it.isNullOrEmpty()) {
                 enabledButton(true)
             } else {
@@ -76,12 +76,12 @@ class LoginScreenFragment : BaseFragment<FragmentLoginScreenBinding>() {
             }
         })
 
-        binding?.loginButton?.setOnClickListener {
-            loginViewModel.connect(binding?.nicknameEditText?.text.toString())
+        binding.loginButton.setOnClickListener {
+            loginViewModel.connect(binding.nicknameEditText.text.toString())
         }
     }
 
     private fun enabledButton(enabled: Boolean) {
-        binding?.loginButton?.isEnabled = (enabled)
+        binding.loginButton.isEnabled = (enabled)
     }
 }

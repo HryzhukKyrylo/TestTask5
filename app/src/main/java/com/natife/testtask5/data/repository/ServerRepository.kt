@@ -20,7 +20,7 @@ interface ServerRepository {
 
     fun getId(): String
 
-    suspend fun disconnectToServer()
+    suspend fun disconnectFromServer()
 
     fun stopRequestingUsers()
 }

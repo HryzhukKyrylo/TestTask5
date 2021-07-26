@@ -8,9 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import java.lang.reflect.ParameterizedType
 
-/**
- *@author admin
- */
+
 abstract class BaseFragment<VB : ViewBinding> : Fragment() {
 
     private var mutableBinding: VB? = null
@@ -31,7 +29,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
         mutableBinding = null
     }
 
-    private fun createBinding(inflater: LayoutInflater, container: ViewGroup?): VB {
+        private fun createBinding(inflater: LayoutInflater, container: ViewGroup?): VB {
         val bindingClass =
             (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<VB>
         val inflateMethod = bindingClass.getDeclaredMethod(

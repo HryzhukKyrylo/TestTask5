@@ -176,7 +176,7 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
         }
     }
 
-    override suspend fun disconnectToServer() {
+    override suspend fun disconnectFromServer() {
         val objectDisconnectDto: String = gson.toJson(DisconnectDto(id = myId, code = 1))
         val actionMessage: String =
             gson.toJson(BaseDto(BaseDto.Action.DISCONNECT, objectDisconnectDto))
@@ -204,7 +204,7 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
             withContext(Dispatchers.Main) {
                 mutableConnection.emit(false)
             }
-            disconnectToServer()
+            disconnectFromServer()
         }
     }
 

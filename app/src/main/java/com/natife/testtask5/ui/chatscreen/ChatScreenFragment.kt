@@ -1,29 +1,26 @@
 package com.natife.testtask5.ui.chatscreen
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.natife.testtask5.R
+import com.natife.testtask5.data.model.User
 import com.natife.testtask5.databinding.FragmentChatScreenBinding
+import com.natife.testtask5.ui.base.BaseFragment
 import com.natife.testtask5.ui.chatscreen.adapter.ChatAdapter
 import com.natife.testtask5.ui.chatscreen.viewmodel.ChatViewModel
 import com.natife.testtask5.ui.listusersscreen.ListUsersScreenFragment
 import com.natife.testtask5.util.hideSoftKeyboard
-import dagger.hilt.android.AndroidEntryPoint
-import com.natife.testtask5.data.model.User
 import com.natife.testtask5.util.showSnack
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ChatScreenFragment : Fragment() {
-    private var binding: FragmentChatScreenBinding? = null
+class ChatScreenFragment : BaseFragment<FragmentChatScreenBinding>() {
     private val chatAdapter: ChatAdapter by lazy {
         ChatAdapter(chatViewModel.getId())
     }
@@ -36,14 +33,6 @@ class ChatScreenFragment : Fragment() {
             chatProfileFactory,
             arguments?.getParcelable<User>(ListUsersScreenFragment.USER_ARG)
         )
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentChatScreenBinding.inflate(inflater, container, false)
-        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,27 +55,27 @@ class ChatScreenFragment : Fragment() {
                 findNavController().popBackStack()
                 return@observe
             } else {
-                binding?.userNameTextView?.text = user.name
+                binding.userNameTextView.text = user.name
             }
         }
     }
 
     private fun initToolbar() {
-        binding?.chatToolbar?.setNavigationIcon(R.drawable.ic_baseline_back)
-        binding?.chatToolbar?.setNavigationOnClickListener {
+        binding.chatToolbar.setNavigationIcon(R.drawable.ic_baseline_back)
+        binding.chatToolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
     }
 
     private fun initAdapter() {
-        binding?.chatRecyclerView?.layoutManager = LinearLayoutManager(requireContext())
-        binding?.chatRecyclerView?.adapter = chatAdapter
+        binding.chatRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.chatRecyclerView.adapter = chatAdapter
     }
 
     private fun initListener() {
         chatViewModel.observeConnection.observe(viewLifecycleOwner) { connection ->
             if (!connection) {
-                binding?.root?.showSnack(
+                binding.root.showSnack(
                     resources.getString(R.string.disconnect),
                     resources.getString(R.string.retry)
                 ) {
@@ -95,11 +84,11 @@ class ChatScreenFragment : Fragment() {
             }
         }
 
-        binding?.messageEditText?.setOnEditorActionListener { _, id, _ ->
+        binding.messageEditText.setOnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_SEND) {
-                chatViewModel.sendMessage(binding?.messageEditText?.text.toString())
+                chatViewModel.sendMessage(binding.messageEditText.text.toString())
                 activity?.hideSoftKeyboard()
-                binding?.apply {
+                binding.apply {
                     messageEditText.setText("")
                     messageEditText.clearFocus()
                     messageEditText.isCursorVisible = false
@@ -120,8 +109,4 @@ class ChatScreenFragment : Fragment() {
         (activity as AppCompatActivity?)?.supportActionBar?.show()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding = null
-    }
 }
