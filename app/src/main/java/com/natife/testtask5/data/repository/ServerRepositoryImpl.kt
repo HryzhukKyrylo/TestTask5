@@ -1,7 +1,6 @@
 package com.natife.testtask5.data.repository
 
 import android.annotation.SuppressLint
-import android.util.Log
 import com.google.gson.Gson
 import com.natife.testtask5.data.model.*
 import com.natife.testtask5.util.CustomScope
@@ -191,7 +190,6 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
 
             printWriter?.println(message)
 
-            Log.i("TAG", "ServerRepositoryImpl/sendMessageToServer: $message")
         } catch (e: Exception) {
             e.printStackTrace()
         }
