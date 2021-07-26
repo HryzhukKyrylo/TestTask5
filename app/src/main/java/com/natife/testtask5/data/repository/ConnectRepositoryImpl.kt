@@ -19,14 +19,6 @@ class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
     override fun requestIp(): String {
         var datagramSocket: DatagramSocket
         val arrayByte = ByteArray(1024)
-        val datagramPacket =
-            DatagramPacket(
-                arrayByte,
-                arrayByte.size,
-                InetAddress.getByName(destinationIP),
-                destinationPort
-            )
-        val requestPacket = DatagramPacket(arrayByte, arrayByte.size)
         val gson = Gson()
 
         while (requestCycle) {
@@ -34,9 +26,17 @@ class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
                 datagramSocket = DatagramSocket().apply {
                     soTimeout = 5000
                 }
+                val requestPacket = DatagramPacket(arrayByte, arrayByte.size)
+                val datagramPacket =
+                    DatagramPacket(
+                        arrayByte,
+                        arrayByte.size,
+                        InetAddress.getByName(destinationIP),
+                        destinationPort
+                    )
                 datagramSocket.send(datagramPacket)
                 datagramSocket.receive(requestPacket)
-                var serverResponse = String(requestPacket.data, 0, requestPacket.length)
+                val serverResponse = String(requestPacket.data, 0, requestPacket.length)
                 val requestedIp: UdpDto = gson.fromJson(serverResponse, UdpDto::class.java)
                 return requestedIp.ip
             } catch (e: IOException) {

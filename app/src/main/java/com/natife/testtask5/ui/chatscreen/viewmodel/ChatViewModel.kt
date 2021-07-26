@@ -17,8 +17,18 @@ class ChatViewModel @AssistedInject constructor(
 ) : ViewModel() {
     private val coroutineScope = CustomScope()
 
+
+    private val mutableMessage = MutableLiveData<MessageDto>()
+    val observeMessage: LiveData<MessageDto> = mutableMessage
+
+    private val mutableUser = MutableLiveData<User?>(userArg)
+    val observeUser: LiveData<User?> = mutableUser
+
+    private val mutableConnection = SingleLiveEvent<Boolean>()
+    val observeConnection: SingleLiveEvent<Boolean> = mutableConnection
+
     init {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.getConnection().collect {
                 withContext(Dispatchers.Main) {
                     mutableConnection.value = it
@@ -34,15 +44,6 @@ class ChatViewModel @AssistedInject constructor(
         }
     }
 
-    private val mutableMessage = MutableLiveData<MessageDto>()
-    val observeMessage: LiveData<MessageDto> = mutableMessage
-
-    private val mutableUser = MutableLiveData<User?>(userArg)
-    val observeUser: LiveData<User?> = mutableUser
-
-    private val mutableConnection = SingleLiveEvent<Boolean>()
-    val observeConnection: SingleLiveEvent<Boolean> = mutableConnection
-
     fun sendMessage(message: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.sendMyMessage(userArg?.id ?: "", message)
@@ -55,11 +56,6 @@ class ChatViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             repository.reconnectToServer()
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        coroutineScope.cancelChildren()
     }
 
     @dagger.assisted.AssistedFactory

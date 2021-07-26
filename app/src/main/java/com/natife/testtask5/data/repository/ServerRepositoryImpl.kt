@@ -181,7 +181,7 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
         val actionMessage: String =
             gson.toJson(BaseDto(BaseDto.Action.DISCONNECT, objectDisconnectDto))
         sendMessageToServer(actionMessage)
-        closeAndNull()
+        close()
     }
 
     private fun sendMessageToServer(message: String) {
@@ -208,7 +208,7 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
         }
     }
 
-    private fun closeAndNull() {
+    private fun close() {
         printWriter?.close()
         printWriter = null
 

@@ -11,10 +11,6 @@ class CustomScope : CoroutineScope {
         get() = Dispatchers.IO + parentJob
 
     fun cancelChildren() {
-//        parentJob.children.forEach {
-//            it.cancel()
-//        }
-        // some
         parentJob.cancelChildren()
     }
 }

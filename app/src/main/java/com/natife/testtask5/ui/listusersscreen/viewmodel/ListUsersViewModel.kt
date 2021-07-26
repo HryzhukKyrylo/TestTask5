@@ -19,10 +19,14 @@ class ListUsersViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private val coroutineScope = CustomScope()
+    private val mutableUsers = MutableLiveData<List<User>>()
+    val observeUsers: LiveData<List<User>> = mutableUsers
+
+    private val mutableConnection = MutableLiveData<Boolean>()
+    val observeConnection: LiveData<Boolean> = mutableConnection
 
     init {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.getConnection().collect {
                 withContext(Dispatchers.Main) {
                     mutableConnection.value = it
@@ -37,13 +41,6 @@ class ListUsersViewModel @Inject constructor(
             }
         }
     }
-
-    private val mutableUsers = MutableLiveData<List<User>>()
-    val observeUsers: LiveData<List<User>> = mutableUsers
-
-    private val mutableConnection = MutableLiveData<Boolean>()
-    val observConnection: LiveData<Boolean> = mutableConnection
-
 
     fun startRequestingUsers() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -68,8 +65,4 @@ class ListUsersViewModel @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        coroutineScope.cancelChildren()
-    }
 }

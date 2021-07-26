@@ -51,7 +51,7 @@ class ListUsersScreenFragment : Fragment() {
 
     private fun initListener() {
         usersViewModel.startRequestingUsers()
-        usersViewModel.observConnection.observe(viewLifecycleOwner) { connection ->
+        usersViewModel.observeConnection.observe(viewLifecycleOwner) { connection ->
             if (!connection) {
                 binding?.root?.showSnack(
                     resources.getString(R.string.disconnect),
