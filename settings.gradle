@@ -1,2 +1,4 @@
 rootProject.name = "TestTask5"
 include ':app'
+include ':core'
+include ':domain'
