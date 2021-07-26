@@ -11,21 +11,13 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.natife.testtask5.R
 import com.natife.testtask5.databinding.FragmentLoginScreenBinding
+import com.natife.testtask5.ui.base.BaseFragment
 import com.natife.testtask5.ui.loginscreen.viewmodel.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class LoginScreenFragment : Fragment() {
-    private var binding: FragmentLoginScreenBinding? = null
+class LoginScreenFragment : BaseFragment<FragmentLoginScreenBinding>() {
     private val loginViewModel: LoginViewModel by viewModels()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentLoginScreenBinding.inflate(inflater, container, false)
-        return binding?.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,7 +33,7 @@ class LoginScreenFragment : Fragment() {
 
         loginViewModel.observeRememberNickname.observe(viewLifecycleOwner) { remember ->
             if (remember) {
-                binding?.rememberPasswordSwitch?.isChecked = true
+                binding.rememberPasswordSwitch.isChecked = true
                 enabledButton(true)
             }
 
@@ -49,16 +41,16 @@ class LoginScreenFragment : Fragment() {
 
         loginViewModel.observeNickname.observe(viewLifecycleOwner) { name ->
             if (!name.isNullOrEmpty()) {
-                binding?.nicknameEditText?.setText(name)
+                binding.nicknameEditText.setText(name)
             }
         }
 
         loginViewModel.observeNavigate.observe(viewLifecycleOwner) { navigate ->
             if (navigate != null && navigate) {
-                binding?.loginProgressBar?.visibility = View.GONE
+                binding.loginProgressBar.visibility = View.GONE
 //                loginViewModel.forget()
                 loginViewModel.saveNickname(
-                    binding?.nicknameEditText?.text.toString(),
+                    binding.nicknameEditText.text.toString(),
                     binding?.rememberPasswordSwitch?.isChecked ?: false
                 )
 
@@ -91,10 +83,5 @@ class LoginScreenFragment : Fragment() {
 
     private fun enabledButton(enabled: Boolean) {
         binding?.loginButton?.isEnabled = (enabled)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding = null
     }
 }
