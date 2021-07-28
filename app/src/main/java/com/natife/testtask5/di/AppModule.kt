@@ -3,8 +3,11 @@ package com.natife.testtask5.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.natife.domain.data.repo.ConnectServerRepository
+import com.natife.domain.data.repo.Repository
+import com.natife.domain.data.repo.ServerRepository
+import com.natife.data.repoImpl.SharedRepositoryImpl
 
-import com.natife.core.data.repository.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,6 +28,6 @@ class AppModule {
     @Provides
     @Singleton
     fun provideSharedRepository(connect : ConnectServerRepository, server: ServerRepository) : Repository =
-        SharedRepositoryImpl(connect,server)
+       SharedRepositoryImpl(connect, server)
 
 }

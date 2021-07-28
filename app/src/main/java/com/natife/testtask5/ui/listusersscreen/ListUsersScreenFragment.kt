@@ -12,7 +12,7 @@ import com.natife.testtask5.databinding.FragmentListUsersScreenBinding
 import com.natife.testtask5.ui.base.BaseFragment
 import com.natife.testtask5.ui.listusersscreen.adapter.ListUsersAdapter
 import com.natife.testtask5.ui.listusersscreen.viewmodel.ListUsersViewModel
-import com.natife.testtask5.util.showSnack
+import com.natife.domain.utils.showSnack
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

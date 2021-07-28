@@ -8,14 +8,14 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.natife.testtask5.R
-import com.natife.core.data.model.User
+import com.natife.domain.data.model.User
 import com.natife.testtask5.databinding.FragmentChatScreenBinding
 import com.natife.testtask5.ui.base.BaseFragment
 import com.natife.testtask5.ui.chatscreen.adapter.ChatAdapter
 import com.natife.testtask5.ui.chatscreen.viewmodel.ChatViewModel
 import com.natife.testtask5.ui.listusersscreen.ListUsersScreenFragment
-import com.natife.testtask5.util.hideSoftKeyboard
-import com.natife.testtask5.util.showSnack
+import com.natife.domain.utils.hideSoftKeyboard
+import com.natife.domain.utils.showSnack
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

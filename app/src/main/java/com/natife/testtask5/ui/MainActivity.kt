@@ -2,12 +2,7 @@ package com.natife.testtask5.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupActionBarWithNavController
-import com.natife.testtask5.R
 import com.natife.testtask5.databinding.ActivityMainBinding
-import com.natife.testtask5.util.showSnack
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

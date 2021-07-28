@@ -1,14 +1,15 @@
 package com.natife.testtask5.ui.chatscreen.viewmodel
 
 import androidx.lifecycle.*
-import com.natife.core.data.model.MessageDto
-import com.natife.core.data.model.User
-import com.natife.core.data.repository.Repository
-import com.natife.testtask5.util.CustomScope
-import com.natife.testtask5.util.SingleLiveEvent
+import com.natife.domain.data.model.MessageDto
+import com.natife.domain.data.model.User
+import com.natife.domain.data.repo.Repository
+import com.natife.domain.utils.CustomScope
+import com.natife.domain.utils.SingleLiveEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collectLatest
 
 class ChatViewModel @AssistedInject constructor(
     private val repository: Repository,
@@ -28,14 +29,14 @@ class ChatViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getConnection().collect {
+            repository.getConnection().collectLatest {
                 withContext(Dispatchers.Main) {
                     mutableConnection.value = it
                 }
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getMessages().collect {
+            repository.getMessages().collectLatest {
                 withContext(Dispatchers.Main) {
                     mutableMessage.value = it
                 }
