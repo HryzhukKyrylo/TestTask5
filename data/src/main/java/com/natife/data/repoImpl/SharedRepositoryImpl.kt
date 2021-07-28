@@ -8,9 +8,9 @@ import com.natife.domain.data.repo.ServerRepository
 import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 
- class SharedRepositoryImpl @Inject constructor(
-     private val connectRepository: ConnectServerRepository,
-     private val serverRepository: ServerRepository
+class SharedRepositoryImpl @Inject constructor(
+    private val connectRepository: ConnectServerRepository,
+    private val serverRepository: ServerRepository
 ) : Repository {
 
     private var nickname = ""

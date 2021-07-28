@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
- class ServerRepositoryImpl @Inject constructor() : ServerRepository {
+class ServerRepositoryImpl @Inject constructor() : ServerRepository {
 
     private val customScope = CustomScope()
     private var pongJob: Job? = null

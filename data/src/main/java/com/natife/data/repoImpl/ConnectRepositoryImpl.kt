@@ -9,11 +9,11 @@ import java.net.DatagramSocket
 import java.net.InetAddress
 import javax.inject.Inject
 
- class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
+class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
 
     private val destinationIP = "10.0.2.2" //for comp
 
-    //    private val dstIP = "255.255.255.255" // for phone
+    //        private val destinationIP = "255.255.255.255" // for phone
     private val destinationPort = 8888
     private var requestCycle = true
 
