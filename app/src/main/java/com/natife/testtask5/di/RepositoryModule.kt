@@ -10,14 +10,14 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-abstract class RepositoryModule {
+interface RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindConnectRepository(connect: com.natife.data.repoImpl.ConnectRepositoryImpl): ConnectServerRepository
+    fun bindConnectRepository(connect: com.natife.data.repoImpl.ConnectRepositoryImpl): ConnectServerRepository
 
     @Binds
     @Singleton
-    abstract fun bindServerRepository(server: com.natife.data.repoImpl.ServerRepositoryImpl): ServerRepository
+    fun bindServerRepository(server: com.natife.data.repoImpl.ServerRepositoryImpl): ServerRepository
 
 }

@@ -27,7 +27,7 @@ class AppModule {
     appContext.getSharedPreferences(CUSTOM_PREF_NAME, Context.MODE_PRIVATE)
     @Provides
     @Singleton
-    fun provideSharedRepository(connect : ConnectServerRepository, server: ServerRepository) : Repository =
+    internal fun provideSharedRepository(connect : ConnectServerRepository, server: ServerRepository) : Repository =
        SharedRepositoryImpl(connect, server)
 
 }
