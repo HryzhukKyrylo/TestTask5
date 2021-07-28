@@ -48,10 +48,9 @@ class LoginScreenFragment : BaseFragment<FragmentLoginScreenBinding>() {
         loginViewModel.observeNavigate.observe(viewLifecycleOwner) { navigate ->
             if (navigate != null && navigate) {
                 binding.loginProgressBar.visibility = View.GONE
-//                loginViewModel.forget()
                 loginViewModel.saveNickname(
                     binding.nicknameEditText.text.toString(),
-                    binding.rememberPasswordSwitch.isChecked ?: false
+                    binding.rememberPasswordSwitch.isChecked
                 )
 
                 with(findNavController()) {

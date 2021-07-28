@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.natife.domain.data.model.User
-import com.natife.domain.data.repo.Repository
+import com.natife.domain1.data.model.User
+import com.natife.domain1.data.repo.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -26,7 +26,7 @@ class ListUsersViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getConnection().collectLatest {
+            repository.getConnection().collectLatest() {
                 withContext(Dispatchers.Main) {
                     mutableConnection.value = it
                 }

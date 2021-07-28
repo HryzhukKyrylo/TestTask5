@@ -12,7 +12,7 @@ import com.natife.testtask5.databinding.FragmentListUsersScreenBinding
 import com.natife.testtask5.ui.base.BaseFragment
 import com.natife.testtask5.ui.listusersscreen.adapter.ListUsersAdapter
 import com.natife.testtask5.ui.listusersscreen.viewmodel.ListUsersViewModel
-import com.natife.domain.utils.showSnack
+import com.natife.testtask5.util.showSnack
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,7 +21,7 @@ class ListUsersScreenFragment : BaseFragment<FragmentListUsersScreenBinding>() {
     private val usersViewModel: ListUsersViewModel by viewModels()
     private val usersAdapter: ListUsersAdapter by lazy {
         ListUsersAdapter { user ->
-            val bundle = bundleOf(USER_ARG to user)
+            val bundle = bundleOf(USER_ARG to user.id, "name" to user.name)
             findNavController().navigate(
                 R.id.action_listUsersScreenFragment_to_chatScreenFragment,
                 bundle

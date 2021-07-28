@@ -2,9 +2,8 @@ package com.natife.data.repoImpl
 
 import android.annotation.SuppressLint
 import com.google.gson.Gson
-import com.natife.domain.utils.CustomScope
-import com.natife.domain.data.model.*
-import com.natife.domain.data.repo.ServerRepository
+import com.natife.domain1.data.model.*
+import com.natife.domain1.data.repo.ServerRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,6 +18,7 @@ import java.net.SocketException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 class ServerRepositoryImpl @Inject constructor() : ServerRepository {
 
@@ -218,5 +218,17 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
         socket = null
 
         customScope.cancelChildren()
+    }
+}
+
+class CustomScope : CoroutineScope {
+
+    private var parentJob = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + parentJob
+
+    fun cancelChildren() {
+        parentJob.cancelChildren()
     }
 }

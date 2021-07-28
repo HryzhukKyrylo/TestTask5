@@ -1,10 +1,10 @@
 package com.natife.data.repoImpl
 
-import com.natife.domain.data.model.MessageDto
-import com.natife.domain.data.model.User
-import com.natife.domain.data.repo.ConnectServerRepository
-import com.natife.domain.data.repo.Repository
-import com.natife.domain.data.repo.ServerRepository
+import com.natife.domain1.data.model.MessageDto
+import com.natife.domain1.data.model.User
+import com.natife.domain1.data.repo.ConnectServerRepository
+import com.natife.domain1.data.repo.Repository
+import com.natife.domain1.data.repo.ServerRepository
 import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 

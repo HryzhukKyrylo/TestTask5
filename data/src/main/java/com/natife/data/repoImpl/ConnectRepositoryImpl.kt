@@ -1,8 +1,8 @@
 package com.natife.data.repoImpl
 
 import com.google.gson.Gson
-import com.natife.domain.data.model.UdpDto
-import com.natife.domain.data.repo.ConnectServerRepository
+import com.natife.domain1.data.model.UdpDto
+import com.natife.domain1.data.repo.ConnectServerRepository
 import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
@@ -13,7 +13,7 @@ class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
 
     private val destinationIP = "10.0.2.2" //for comp
 
-    //        private val destinationIP = "255.255.255.255" // for phone
+//            private val destinationIP = "255.255.255.255" // for phone
     private val destinationPort = 8888
     private var requestCycle = true
 

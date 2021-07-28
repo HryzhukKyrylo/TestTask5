@@ -5,10 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.natife.domain.data.repo.Repository
-import com.natife.domain.utils.PreferenceHelper.savedLogIn
-import com.natife.domain.utils.PreferenceHelper.savedNickname
-import com.natife.domain.utils.SingleLiveEvent
+import com.natife.domain1.data.repo.Repository
+import com.natife.testtask5.util.PreferenceHelper.savedLogIn
+import com.natife.testtask5.util.PreferenceHelper.savedNickname
+import com.natife.testtask5.util.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

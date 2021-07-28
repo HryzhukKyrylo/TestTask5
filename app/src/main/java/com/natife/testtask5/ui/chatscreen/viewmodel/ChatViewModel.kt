@@ -1,11 +1,9 @@
 package com.natife.testtask5.ui.chatscreen.viewmodel
 
 import androidx.lifecycle.*
-import com.natife.domain.data.model.MessageDto
-import com.natife.domain.data.model.User
-import com.natife.domain.data.repo.Repository
-import com.natife.domain.utils.CustomScope
-import com.natife.domain.utils.SingleLiveEvent
+import com.natife.domain1.data.model.MessageDto
+import com.natife.domain1.data.repo.Repository
+import com.natife.testtask5.util.SingleLiveEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.*
@@ -13,16 +11,14 @@ import kotlinx.coroutines.flow.collectLatest
 
 class ChatViewModel @AssistedInject constructor(
     private val repository: Repository,
-    @Assisted private val userArg: User?
+    @Assisted private val userArg: String?
 ) : ViewModel() {
-    private val coroutineScope = CustomScope()
-
 
     private val mutableMessage = MutableLiveData<MessageDto>()
     val observeMessage: LiveData<MessageDto> = mutableMessage
 
-    private val mutableUser = MutableLiveData<User?>(userArg)
-    val observeUser: LiveData<User?> = mutableUser
+    private val mutableUser = MutableLiveData<String?>(userArg)
+    val observeUser: LiveData<String?> = mutableUser
 
     private val mutableConnection = SingleLiveEvent<Boolean>()
     val observeConnection: SingleLiveEvent<Boolean> = mutableConnection
@@ -46,7 +42,7 @@ class ChatViewModel @AssistedInject constructor(
 
     fun sendMessage(message: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.sendMyMessage(userArg?.id ?: "", message)
+            repository.sendMyMessage(userArg ?: "", message)
         }
     }
 
@@ -60,13 +56,13 @@ class ChatViewModel @AssistedInject constructor(
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
-        fun create(user: User?): ChatViewModel
+        fun create(user: String?): ChatViewModel
     }
 
     companion object {
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            user: User?
+            user: String?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return assistedFactory.create(user) as T
