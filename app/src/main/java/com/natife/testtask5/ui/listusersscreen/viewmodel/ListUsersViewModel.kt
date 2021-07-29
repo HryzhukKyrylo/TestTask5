@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.natife.domain1.data.model.User
 import com.natife.domain1.data.repo.Repository
+import com.natife.testtask5.util.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -21,8 +22,8 @@ class ListUsersViewModel @Inject constructor(
     private val mutableUsers = MutableLiveData<List<User>>()
     val observeUsers: LiveData<List<User>> = mutableUsers
 
-    private val mutableConnection = MutableLiveData<Boolean>()
-    val observeConnection: LiveData<Boolean> = mutableConnection
+    private val mutableConnection = SingleLiveEvent<Boolean>()
+    val observeConnection: SingleLiveEvent<Boolean> = mutableConnection
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

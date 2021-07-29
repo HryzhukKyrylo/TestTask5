@@ -1,8 +1,8 @@
 package com.natife.domain1.data.repo
 
 import com.natife.domain1.data.model.MessageDto
-import kotlinx.coroutines.flow.SharedFlow
 import com.natife.domain1.data.model.User
+import kotlinx.coroutines.flow.Flow
 
 interface Repository {
 
@@ -10,11 +10,11 @@ interface Repository {
 
     suspend fun startRequestingUsers()
 
-    fun getUsers(): SharedFlow<List<User>>
+    fun getUsers(): Flow<List<User>>
 
-    suspend fun getMessages(): SharedFlow<MessageDto>
+    suspend fun getMessages(): Flow<MessageDto>
 
-    suspend fun getConnection(): SharedFlow<Boolean>
+    suspend fun getConnection(): Flow<Boolean>
 
     suspend fun sendMyMessage(idUser: String, message: String)
 

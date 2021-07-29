@@ -10,7 +10,6 @@ import com.natife.domain1.data.repo.Repository
 import com.natife.domain1.data.repo.ServerRepository
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
@@ -20,7 +19,7 @@ private const val CUSTOM_PREF_NAME = "my_preferences"
 
 @InstallIn(SingletonComponent::class)
 @Module(includes = [RepositoryModule::class])
-object AppModule {
+class AppModule {
 
     @Provides
     @Singleton

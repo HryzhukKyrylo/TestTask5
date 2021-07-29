@@ -39,6 +39,7 @@ class ListUsersScreenFragment : BaseFragment<FragmentListUsersScreenBinding>() {
 
     private fun initListener() {
         usersViewModel.startRequestingUsers()
+
         usersViewModel.observeConnection.observe(viewLifecycleOwner) { connection ->
             if (!connection) {
                 binding.root.showSnack(

@@ -5,7 +5,7 @@ import com.natife.domain1.data.model.User
 import com.natife.domain1.data.repo.ConnectServerRepository
 import com.natife.domain1.data.repo.Repository
 import com.natife.domain1.data.repo.ServerRepository
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class SharedRepositoryImpl @Inject constructor(
@@ -25,13 +25,13 @@ class SharedRepositoryImpl @Inject constructor(
         serverRepository.startRequestingUsers()
     }
 
-    override fun getUsers(): SharedFlow<List<User>> =
+    override fun getUsers(): Flow<List<User>> =
         serverRepository.getUsers()
 
-    override suspend fun getMessages(): SharedFlow<MessageDto> =
+    override suspend fun getMessages(): Flow<MessageDto> =
         serverRepository.getMessages()
 
-    override suspend fun getConnection(): SharedFlow<Boolean> =
+    override suspend fun getConnection(): Flow<Boolean> =
         serverRepository.getConnection()
 
     override fun getId() = serverRepository.getId()

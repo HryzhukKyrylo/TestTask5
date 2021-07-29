@@ -7,9 +7,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.components.SingletonComponent
 
-/**
- *@author admin
- */
 @ActivityScoped
 @EntryPoint
 @InstallIn(SingletonComponent::class)

@@ -6,6 +6,7 @@ import com.natife.domain1.data.model.*
 import com.natife.domain1.data.repo.ServerRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import java.io.BufferedReader
@@ -84,11 +85,11 @@ class ServerRepositoryImpl @Inject constructor() : ServerRepository {
         }
     }
 
-    override fun getUsers(): SharedFlow<List<User>> = observeUsers
+    override fun getUsers(): Flow<List<User>> = observeUsers
 
-    override fun getMessages(): SharedFlow<MessageDto> = observeMessages
+    override fun getMessages(): Flow<MessageDto> = observeMessages
 
-    override fun getConnection(): SharedFlow<Boolean> = observeConnection
+    override fun getConnection(): Flow<Boolean> = observeConnection
 
     override fun getId(): String = myId
 

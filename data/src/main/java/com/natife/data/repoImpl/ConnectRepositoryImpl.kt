@@ -13,7 +13,7 @@ class ConnectRepositoryImpl @Inject constructor() : ConnectServerRepository {
 
     private val destinationIP = "10.0.2.2" //for comp
 
-//            private val destinationIP = "255.255.255.255" // for phone
+//    private val destinationIP = "255.255.255.255" // for phone
     private val destinationPort = 8888
     private var requestCycle = true
 

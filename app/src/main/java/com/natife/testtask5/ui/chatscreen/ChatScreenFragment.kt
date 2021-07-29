@@ -30,8 +30,22 @@ class ChatScreenFragment : BaseFragment<FragmentChatScreenBinding>() {
     private val chatViewModel by viewModels<ChatViewModel> {
         ChatViewModel.provideFactory(
             chatProfileFactory,
-            arguments?.getString(ListUsersScreenFragment.USER_ARG?:"")
+            arguments?.getString(ListUsersScreenFragment.USER_ARG)
         )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        chatViewModel.observeConnection.observe(viewLifecycleOwner) { connection ->
+            if (!connection) {
+                binding.root.showSnack(
+                    resources.getString(R.string.disconnect),
+                    resources.getString(R.string.retry)
+                ) {
+                    chatViewModel.reconnectToServer()
+                }
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,7 +68,7 @@ class ChatScreenFragment : BaseFragment<FragmentChatScreenBinding>() {
                 findNavController().popBackStack()
                 return@observe
             } else {
-                binding.userNameTextView.text =  arguments?.getString("name")?:""
+                binding.userNameTextView.text = arguments?.getString("name") ?: ""
             }
         }
     }
@@ -72,16 +86,6 @@ class ChatScreenFragment : BaseFragment<FragmentChatScreenBinding>() {
     }
 
     private fun initListener() {
-        chatViewModel.observeConnection.observe(viewLifecycleOwner) { connection ->
-            if (!connection) {
-                binding.root.showSnack(
-                    resources.getString(R.string.disconnect),
-                    resources.getString(R.string.retry)
-                ) {
-                    chatViewModel.reconnectToServer()
-                }
-            }
-        }
 
         binding.messageEditText.setOnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_SEND) {
